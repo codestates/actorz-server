@@ -1,14 +1,18 @@
 const express = require('express');
 const cors = require('cors');
+const mongoose = require('mongoose');
+
+mongoose.connect('mongodb://localhost:27017/actorz')
 
 const PORT = 3001;
 const app = express();
 
+
 app.use(express.json());
 app.use(cors());
 
-app.get('/api', (req, res) => {
-  res.send('Hello Actorz :)');
+app.post('/api', (req, res) => {
+  res.send('hi')
 });
 
 const server = app.listen(PORT, () => {
