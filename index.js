@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 
-const PORT = 8080;
+const PORT = 3001;
 const app = express();
 
 app.use(express.json());
