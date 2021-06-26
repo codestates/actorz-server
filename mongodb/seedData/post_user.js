@@ -1,4 +1,4 @@
-const { post_user } = require('../models');
+const { post_user } = require("../models");
 
 module.exports = async (user_id) => {
   const seedData = {

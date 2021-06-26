@@ -1,7 +1,7 @@
-require('dotenv').config();
-const mongoose = require('mongoose');
-const { users, posts, post_user, tags, portfolio } = require('./models');
-const { mongodbConfig } = require('../config');
+require("dotenv").config();
+const mongoose = require("mongoose");
+const { users, posts, post_user, tags, portfolio } = require("./models");
+const { mongodbConfig } = require("../config");
 
 const mongodbUrl = process.env.MONGO_DB_URL;
 
@@ -19,6 +19,6 @@ const migrate = async (callback) => {
 migrate(() => {
   mongoose.disconnect((err) => {
     if(err) return console.log(err);
-    console.log('successfully migrate');
+    console.log("successfully migrate");
   });
 })

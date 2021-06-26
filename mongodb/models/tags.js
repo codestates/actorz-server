@@ -1,4 +1,4 @@
-const { model, Schema } = require('mongoose')
+const { model, Schema } = require("mongoose")
 
 const ObjectId = Schema.ObjectId;
 const TagsSchema = new Schema({
@@ -10,9 +10,9 @@ const TagsSchema = new Schema({
   posts: {
     type: [{
       type: ObjectId,
-      ref: 'posts'
+      ref: "posts"
     }]
   }
 });
 
-module.exports = model('tags', TagsSchema);
+module.exports = model("tags", TagsSchema);

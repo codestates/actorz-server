@@ -1,4 +1,4 @@
-const { portfolio } = require('../models');
+const { portfolio } = require("../models");
 
 module.exports = async (user_id) => {
   const seedData = {

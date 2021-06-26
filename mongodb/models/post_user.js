@@ -1,4 +1,4 @@
-const { model, Schema } = require('mongoose')
+const { model, Schema } = require("mongoose")
 
 const ObjectId = Schema.ObjectId;
 const PostUserSchema = new Schema({
@@ -6,14 +6,14 @@ const PostUserSchema = new Schema({
   posts: {
     type: [{
       type: ObjectId,
-      ref: 'posts'
+      ref: "posts"
     }]
   },
   users: {
     type: ObjectId,
-    ref: 'users',
+    ref: "users",
     unique: true
   }
 });
 
-module.exports = model('post_user', PostUserSchema);
+module.exports = model("post_user", PostUserSchema);

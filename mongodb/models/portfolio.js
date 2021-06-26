@@ -1,20 +1,20 @@
-const { model, Schema } = require('mongoose')
+const { model, Schema } = require("mongoose")
 
 const ObjectId = Schema.ObjectId;
 const PortfolioSchema = new Schema({
   author: ObjectId,
   user_id: {
     type: ObjectId,
-    ref: 'users',
+    ref: "users",
     required: true,
     unique: true
   },
   posts: {
     type: [{
       type: ObjectId,
-      ref: 'posts'
+      ref: "posts"
     }]
   }
 });
 
-module.exports = model('portfolio', PortfolioSchema);
+module.exports = model("portfolio", PortfolioSchema);
