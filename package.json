@@ -5,6 +5,9 @@
     "main": "index.js",
     "scripts": {
         "start": "nodemon index.js",
+        "migrate": "node mongodb/migrate.js",
+        "migrate:undo": "node mongodb/migrateUndo.js",
+        "seed": "node mongodb/seed.js",
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "dependencies": {

@@ -1,7 +1,7 @@
 module.exports = {
-  users: require('./users'),
-  posts: require('./posts'),
-  post_user: require('./post_user'),
-  tag: require('./tag'),
-  portpolio: require('./portfolio')
+  users: require("./users"),
+  posts: require("./posts"),
+  post_user: require("./post_user"),
+  tags: require("./tags"),
+  portfolio: require("./portfolio")
 }

@@ -1,24 +1,23 @@
-const mongoose = require('mongoose');
-const { users } = require('./models');
-const { usersSeeds } = require('./seedData');
+require("dotenv").config();
+const mongoose = require("mongoose");
+const { usersSeeds, portfolioSeeds, post_userSeeds, postsSeeds, tagsSeeds } = require("./seedData");
+const { mongodbUrl, mongodbConfig } = require("../config");
 
-const mongodbUrl = 'mongodb://localhost:27017/actorz';
-const mongodbConfig = {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  useCreateIndex: true
-}
 mongoose.connect(mongodbUrl, mongodbConfig);
 
 const seeder = async (callback) => {
-  await users.insertMany(usersSeeds);
+  const userData = await usersSeeds();
+  await portfolioSeeds(userData._id);
+  await post_userSeeds(userData._id);
+  const postData = await postsSeeds(userData._id);
+  await tagsSeeds(postData._id);
 
   await callback();
-}
+};
 
 seeder(() => {
   mongoose.disconnect((err) => {
     if(err) return console.log(err);
-    console.log('successfully seeder');
+    console.log("successfully seeder");
   });
-})
+});

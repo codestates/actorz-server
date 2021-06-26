@@ -1,11 +1,11 @@
-const { model, Schema } = require('mongoose')
+const { model, Schema } = require("mongoose")
 
 const ObjectId = Schema.ObjectId;
 const UsersSchema = new Schema({
   author: ObjectId,
   mainPic: {
     type: String,
-    default: 'https://ncache.ilbe.com/files/attach/new/20200206/4255758/1621045151/11231547442/2a4742fc9ee703223e7b964de8730732_11231547478.jpg'
+    default: "https://ncache.ilbe.com/files/attach/new/20200206/4255758/1621045151/11231547442/2a4742fc9ee703223e7b964de8730732_11231547478.jpg"
   },
   email: {
     type: String,
@@ -26,7 +26,7 @@ const UsersSchema = new Schema({
   provider: {
     type: String,
     required: true,
-    enum: ['local', 'google', 'kakao']
+    enum: ["local", "google", "kakao"]
   },
   gender: {
     type: Boolean,
@@ -82,4 +82,4 @@ const UsersSchema = new Schema({
   }
 });
 
-module.exports = model('users', UsersSchema);
+module.exports = model("users", UsersSchema);
