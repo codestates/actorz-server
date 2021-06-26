@@ -2,7 +2,16 @@ const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 
-mongoose.connect('mongodb://localhost:27017/actorz')
+const mongodbUrl = 'mongodb://localhost:27017/actorz';
+const mongodbConfig = {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  useCreateIndex: true
+}
+mongoose.connect(mongodbUrl, mongodbConfig, (err) => {
+  if(err) return console.log(err);
+  console.log('successfully connect')
+})
 
 const PORT = 3001;
 const app = express();
