@@ -1,17 +1,32 @@
 require("dotenv").config();
+const express = require('express');
+const cors = require('cors');
+const mongoose = require('mongoose');
 const fs = require("fs");
 const https = require("https");
 
-const express = require("express");
-const cors = require("cors");
+const mongodbUrl = 'mongodb://localhost:27017/actorz';
+const mongodbConfig = {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  useCreateIndex: true
+}
+mongoose.connect(mongodbUrl, mongodbConfig, (err) => {
+  if(err) return console.log(err);
+  console.log('successfully connect')
+})
 
 const PORT = 3001;
 const app = express();
+
 
 app.use(express.json());
 
 app.get("/api", (req, res) => {
   res.send("Hello Actorz :)");
+});
+app.post('/api', (req, res) => {
+  res.send('hi')
 });
 
 let server;
@@ -43,4 +58,5 @@ if(process.env.NODE_ENV === "production"){
     console.log('not secured');
   }
 }
+
 module.exports = server;
