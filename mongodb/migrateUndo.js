@@ -8,17 +8,17 @@ const mongodbUrl = process.env.MONGO_DB_URL;
 mongoose.connect(mongodbUrl, mongodbConfig);
 
 const migrate = async (callback) => {
-  await users.createCollection();
-  await posts.createCollection();
-  await post_user.createCollection();
-  await tags.createCollection();
-  await portfolio.createCollection();
+  await users.collection.drop();
+  await posts.collection.drop();
+  await post_user.collection.drop();
+  await tags.collection.drop();
+  await portfolio.collection.drop();
   await callback();
 }
 
 migrate(() => {
   mongoose.disconnect((err) => {
     if(err) return console.log(err);
-    console.log('successfully migrate');
+    console.log('successfully migrate all undo');
   });
 })

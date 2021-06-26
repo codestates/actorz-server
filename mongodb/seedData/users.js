@@ -1,6 +1,7 @@
+const { users } = require('../models');
 
-module.exports = [
-  {
+module.exports = async () => {
+  const seedData = {
     email: 'kimcoding@gmail.com',
     password: '1234',
     name: 'kimcoding',
@@ -23,29 +24,8 @@ module.exports = [
       phoneNum: '02-0000-0000',
       jobTitle: '학원'
     }
-  },
-  {
-    email: 'leeact@gmail.com',
-    password: '1234',
-    name: 'leeact',
-    provider: 'local',
-    gender: false,
-    dob: 98-01-01,
-    careers: [{
-      title: '무철도사',
-      year: 19-01-01,
-      type: '코믹'
-    }],
-    recruitor: {
-      bName: '코드스테이츠 짝퉁',
-      bAddress: {
-        city: '서산',
-        street: '해미',
-        zipCode: '11111'
-      },
-      bEmail: 'codestates1@gmail.com',
-      phoneNum: '032-0000-0000',
-      jobTitle: '학원'
-    }
-  }
-]
+  };
+  const userData = await new users(seedData);
+
+  return await userData.save();
+}

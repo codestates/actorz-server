@@ -5,7 +5,9 @@ const PortfolioSchema = new Schema({
   author: ObjectId,
   user_id: {
     type: ObjectId,
-    ref: 'users'
+    ref: 'users',
+    required: true,
+    unique: true
   },
   posts: {
     type: [{

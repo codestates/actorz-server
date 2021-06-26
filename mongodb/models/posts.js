@@ -19,10 +19,7 @@ const PostsSchema = new Schema({
     required: true
   },
   tags:{
-    type: [{
-      type: ObjectId,
-      ref: 'tags'
-    }]
+    type: []
   },
   likes: {
     type: [{
