@@ -1,9 +1,7 @@
 require("dotenv").config();
 const mongoose = require("mongoose");
 const { usersSeeds, portfolioSeeds, post_userSeeds, postsSeeds, tagsSeeds } = require("./seedData");
-const { mongodbConfig } = require("../config");
-
-const mongodbUrl = process.env.MONGO_DB_URL;
+const { mongodbUrl, mongodbConfig } = require("../config");
 
 mongoose.connect(mongodbUrl, mongodbConfig);
 

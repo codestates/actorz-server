@@ -4,9 +4,7 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 const fs = require("fs");
 const https = require("https");
-const { mongodbConfig } = require("./config");
-
-const mongodbUrl = process.env.MONGO_DB_URL;
+const { mongodbUrl, mongodbConfig } = require("./config");
 
 mongoose.connect(mongodbUrl, mongodbConfig, (err) => {
   if(err) return console.log(err);
@@ -15,7 +13,6 @@ mongoose.connect(mongodbUrl, mongodbConfig, (err) => {
 
 const PORT = 3001;
 const app = express();
-
 
 app.use(express.json());
 
