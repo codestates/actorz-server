@@ -19,21 +19,12 @@ const {
 
 const PORT = 3001;
 const app = express();
-const corsOption = {
-  origin: ["www.actorz.click", "actorz.click"],
-  methods: ['GET', 'POST','OPTIONS'],
-  credentials: true,
-  maxAge: 86400,
-  optionsSuccessStatus: 204
-};
-
 mongoose.connect(mongodbUrl, mongodbConfig, (err) => {
   if(err) return console.log(err);
   console.log("successfully connect")
 });
 
 app.use(express.json());
-app.use(cors(corsOption));
 
 
 app.get("/api", (req, res) => {
