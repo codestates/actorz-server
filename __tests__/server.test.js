@@ -107,9 +107,5 @@ describe("Actorz project test code", () => {
     describe("url 요청, POST /api/upload", () => {
       it("", () => {});
     });
-
-    describe("파일 업로드, PUT S3-bucket-url", () => {
-      it("", () => {});
-    });
   });
 });
