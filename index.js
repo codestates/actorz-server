@@ -84,7 +84,7 @@ if(process.env.NODE_ENV === "production"){
   });
 }else{
   app.use(cors({
-    origin:["https://localhost:3000"], //3000 for react server?
+    origin: "*", //3000 for react server?
     credentials:true,
     methods:["POST","GET","OPTIONS"]
   }));

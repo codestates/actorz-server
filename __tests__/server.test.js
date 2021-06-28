@@ -1,8 +1,11 @@
 const app = require("../index");
-const server = request(app);
-const AWSMock = require('mock-aws-s3');
+const request = require('supertest');
+const agent = request(app);
 const { expect, assert } = require("chai");
 const https = require("https");
+const { sign, verify } = require('jsonwebtoken');
+
+process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = 0
 
 describe("Actorz project test code", () => {
   describe("MongoDB Connect", () => {
@@ -107,25 +110,33 @@ describe("Actorz project test code", () => {
 
   describe("S3 bucket API", () => {
     describe("url 요청, POST /api/upload", () => {
-      it("응답코드 201, data: url, message: ok 를 받아야합니다", () => {
-        const res = await server
+      it("응답코드 201, data: url, message: ok 를 받아야합니다", async () => {
+        const tokenBodyData = { // 일단 엔지니어님 코드를 복붙 했습니다. 추후 수정 필요합니다
+          id: 1,
+          userId: 'kimcoding',
+          email: 'kimcoding@codestates.com',
+          createdAt: '2020-11-18T10:00:00.000Z',
+          updatedAt: '2020-11-18T10:00:00.000Z',
+        };
+        const accessToken = sign(tokenBodyData, process.env.ACCESS_SECRET);
+        
+        const res = await agent
         .get("/api/upload")
-        .set({
-          authorization: 'token fake_access_token' // token handler 수정해야함
-        });
-        expect(res.data, "url이 존재해야합니다").to.exist;
-        expect(res.data, "url이 null이면 안됩니다").not.null;
-        expect(res.data, "url이 string타입이어야 합니다").to.be.a("string");
+        .set({authorization: `Bearer ${accessToken}`});;
+
+        expect(res.body.data, "url이 존재해야합니다").to.exist;
+        expect(res.body.data, "url이 null이면 안됩니다").not.null;
+        expect(res.body.data, "url이 string타입이어야 합니다").to.be.a("string");
         expect(res.statusCode).to.eql(201);
-        expect(res.message).to.eql("ok");
+        expect(res.body.message).to.eql("ok");
       });
     });
     describe("url 요청 에러핸들링, POST /api/upload", () => {
-      it("응답코드 401, data: null, message: Authorization dont exist 를 받아야합니다", () => {
-        const res = await server.get("/api/upload");
-        expect(res.data).is.null;
+      it("응답코드 401, data: null, message: Authorization dont exist 를 받아야합니다", async () => {
+        const res = await agent.get("/api/upload");
+        expect(res.body.data).is.null;
         expect(res.statusCode).to.eql(401);
-        expect(res.message).to.eql("Authorization dont exist");
+        expect(res.body.message).to.eql("Authorization dont exist");
       });
     });
   });
