@@ -1,3 +1,4 @@
+require("dotenv").config();
 const AWS = require("aws-sdk");
 
 const accessKeyId =  process.env.AWS_ACCESS_KEY;
@@ -9,12 +10,12 @@ const s3 = new AWS.S3({
     region,
     accessKeyId,
     secretAccessKey,
-    signatureVersion: "4"
+    signatureVersion: "v4"
 });
 
 // upload url 만듦
-module.exports = async () => {
-    const imgName = "" // 랜덤 유니크 이미지네임 어떻게 할까요?
+module.exports = async (req, res) => {
+    const objName = "random" // 랜덤 유니크 이미지네임 어떻게 할까요?
     const params = {
         Bucket: bucketName,
         Key: imgName,
@@ -24,5 +25,8 @@ module.exports = async () => {
         "putObject", 
         params
     );
-    return uploadUrl;
+    res.status(201).send({
+        data: uploadUrl,
+        message: "ok"
+    });
 };

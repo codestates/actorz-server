@@ -30,6 +30,7 @@
         "eslint": "^7.24.0",
         "eslint-config-standard": "^16.0.2",
         "mocha": "^9.0.1",
+        "mock-aws-s3": "^4.0.2",
         "sequelize-cli": "^6.2.0"
     }
 }

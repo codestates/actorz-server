@@ -1,4 +1,6 @@
 const app = require("../index");
+const server = request(app);
+const AWSMock = require('mock-aws-s3');
 const { expect, assert } = require("chai");
 const https = require("https");
 
@@ -105,7 +107,26 @@ describe("Actorz project test code", () => {
 
   describe("S3 bucket API", () => {
     describe("url 요청, POST /api/upload", () => {
-      it("", () => {});
+      it("응답코드 201, data: url, message: ok 를 받아야합니다", () => {
+        const res = await server
+        .get("/api/upload")
+        .set({
+          authorization: 'token fake_access_token' // token handler 수정해야함
+        });
+        expect(res.data, "url이 존재해야합니다").to.exist;
+        expect(res.data, "url이 null이면 안됩니다").not.null;
+        expect(res.data, "url이 string타입이어야 합니다").to.be.a("string");
+        expect(res.statusCode).to.eql(201);
+        expect(res.message).to.eql("ok");
+      });
+    });
+    describe("url 요청 에러핸들링, POST /api/upload", () => {
+      it("응답코드 401, data: null, message: Authorization dont exist 를 받아야합니다", () => {
+        const res = await server.get("/api/upload");
+        expect(res.data).is.null;
+        expect(res.statusCode).to.eql(401);
+        expect(res.message).to.eql("Authorization dont exist");
+      });
     });
   });
 });
