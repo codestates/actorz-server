@@ -5,10 +5,12 @@
     "main": "index.js",
     "scripts": {
         "start": "nodemon index.js",
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "migrate": "node mongodb/migrate.js",
+        "migrate:undo": "node mongodb/migrateUndo.js",
+        "seed": "node mongodb/seed.js",
+        "test": "NODE_ENV=test mocha '__tests__/server.test.js' --exit"
     },
     "dependencies": {
-        "aws-s3": "^2.0.5",
         "axios": "^0.21.1",
         "cookie-parser": "^1.4.5",
         "cors": "^2.8.5",
@@ -21,8 +23,11 @@
         "pm2": "^4.5.0"
     },
     "devDependencies": {
+        "chai": "^4.3.4",
         "eslint": "^7.24.0",
         "eslint-config-standard": "^16.0.2",
-        "sequelize-cli": "^6.2.0"
+        "factory-girl": "^5.0.4",
+        "mocha": "^9.0.1",
+        "supertest": "^6.1.3"
     }
 }
