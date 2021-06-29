@@ -1,4 +1,3 @@
-require("dotenv").config();
 require("../lib/mongooseConnector")();
 const mongoose = require("mongoose");
 const { users, posts, post_user, tags, portfolio } = require("./models");
