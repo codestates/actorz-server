@@ -1,28 +1,26 @@
 const app = require("../index");
+const dbConnector = require("../lib/mongooseConnector");
+const testDBsetting = require("./testDBsetting");
+
 const request = require("supertest");
 const { expect } = require("chai");
-const { sign, verify } = require('jsonwebtoken');
-const mongoose = require("mongoose");
+const { sign, verify } = require("jsonwebtoken");
 const https = require("https");
-const agent = request(app);
 
-const dbConnector = require("../lib/mongooseConnector");
+const agent = request(app);
 
 process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0;
 
 describe("Actorz project test code", () => {
-  let connect = false;
+  let db = null;
   before( async () => {
-    await dbConnector()
-    .then(() => connect = true)
-    .catch((err) => {
-      throw err;
-    });
+    testDBsetting();
+    db = await dbConnector();
   });
 
   describe("MongoDB Connect", () => {
     it("MongoDB에 연결", () => {
-      expect(connect).to.equal(true);
+      expect(db).is.not.null;
     });
   });
 
@@ -33,14 +31,6 @@ describe("Actorz project test code", () => {
   });
 
   describe("User API", () => {
-    let db;
-    before( async () => {
-      db = await dbConnector();
-    });
-    after(async () => {
-      await db.close();
-    });
-    
     describe("로그인, POST /api/login", () => {
       it("로그인 요청시 전달받은 비밀번호가 잘못된 경우, 'Invalid user or Wrong password'메세지가 응답에 포함되어야 합니다", async () => {
         const res = await agent.post("/api/login").send({
@@ -92,23 +82,23 @@ describe("Actorz project test code", () => {
         );
         expect(tokenData).to.exist;
         expect(Object.keys(tokenData)).to.eql([ // 마찬가지로 수정 필요함. 토큰 안에 내용 뭐가 들어갈지...
-          'id',
-          'userId',
-          'email',
-          'createdAt',
-          'updatedAt',
-          'iat',
-          'exp',
+          "id",
+          "userId",
+          "email",
+          "createdAt",
+          "updatedAt",
+          "iat",
+          "exp",
         ]);
       });
       it("로그인 성공시 전달되는 응답객체에는 refreshToken이 존재해야 합니다.", async () => {
-        const res = await agent.post('/login').send({
+        const res = await agent.post("/login").send({
           email: "actorz@click.com",
           password: "password",
         });
         const refreshTokenCookieExists = res.headers[
-          'set-cookie'
-        ].some((cookie) => cookie.includes('refreshToken'));
+          "set-cookie"
+        ].some((cookie) => cookie.includes("refreshToken"));
 
         expect(refreshTokenCookieExists).to.eql(true);
       });
@@ -176,7 +166,7 @@ describe("Actorz project test code", () => {
       it("", () => {});
     });
 
-    describe("검색, GET /api/post/search?q=''&...", () => {
+    describe("검색, GET /api/post/search", () => {
       it("", () => {});
     });
   });
@@ -204,10 +194,10 @@ describe("Actorz project test code", () => {
       it("응답코드 201, data: url, message: ok 를 받아야합니다", async () => {
         const tokenBodyData = { // 일단 엔지니어님 코드를 복붙 했습니다. 추후 수정 필요합니다
           id: 1,
-          userId: 'kimcoding',
-          email: 'kimcoding@codestates.com',
-          createdAt: '2020-11-18T10:00:00.000Z',
-          updatedAt: '2020-11-18T10:00:00.000Z',
+          userId: "kimcoding",
+          email: "kimcoding@codestates.com",
+          createdAt: "2020-11-18T10:00:00.000Z",
+          updatedAt: "2020-11-18T10:00:00.000Z",
         };
         const accessToken = sign(tokenBodyData, process.env.ACCESS_SECRET);
         
@@ -233,6 +223,6 @@ describe("Actorz project test code", () => {
   });
 
   after(async () => {
-    await mongoose.disconnect();
+    await db.close();
   })
 });

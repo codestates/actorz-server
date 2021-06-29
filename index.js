@@ -1,12 +1,8 @@
 require("dotenv").config();
-require("./lib/mongooseConnector")();
 const express = require("express");
 const cors = require("cors");
-const mongoose = require("mongoose");
 const fs = require("fs");
 const https = require("https");
-const { mongodbUrl, mongodbConfig } = require("./config");
-
 
 const { 
   user, 
