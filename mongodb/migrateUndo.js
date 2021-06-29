@@ -14,7 +14,7 @@ const migrate = async (callback) => {
   await callback();
 }
 
-migrate(() => {
+module.exports = migrate(() => {
   mongoose.disconnect((err) => {
     if(err) return console.log(err);
     console.log("successfully migrate all undo");

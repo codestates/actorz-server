@@ -1,8 +1,22 @@
 const app = require("../index");
+const request = require("supertest");
+const agent = request(app);
+const { sign, verify } = require("jsonwebtoken");
+const factory = require("./helper/factory")
 const { expect, assert } = require("chai");
 const https = require("https");
 
+const dbConnector = require("../../lib/mongooseConnector");
+
+process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0;
+
 describe("Actorz project test code", () => {
+  // before every describe
+  // let db;
+  // before( async () => {
+  //   db = await dbConnector();
+  // });
+
   describe("MongoDB Connect", () => {
     it("", () => {});
   });
@@ -14,8 +28,85 @@ describe("Actorz project test code", () => {
   });
 
   describe("User API", () => {
+    let db;
+    before( async () => {
+      db = await dbConnector();
+    });
+    after(async () => {
+      await db.close();
+    });
+    
     describe("로그인, POST /api/login", () => {
-      it("", () => {});
+      it("로그인 요청시 전달받은 비밀번호가 잘못된 경우, 'Invalid user or Wrong password'메세지가 응답에 포함되어야 합니다", async () => {
+        const res = await agent.post("/api/login").send({
+          email: "actorz@click.com",
+          password: "thisIsWrongPassword",
+        });
+        expect(res.body.message).to.eql("Invalid user or Wrong password");
+        expect(res.body.data).is.null;
+        expect(res.statusCode).to.eql(401);
+      });
+
+      it("로그인 요청시 전달받은 이메일이 잘못된 경우, 'Invalid user or Wrong password'메세지가 응답에 포함되어야 합니다", async () => {
+        const res = await agent.post("/api/login").send({
+          email: "wrongEmail@click.com",
+          password: "password",
+        });
+        expect(res.body.message).to.eql("Invalid user or Wrong password");
+        expect(res.body.data).is.null;
+        expect(res.statusCode).to.eql(401);
+      });
+
+      it("로그인 요청시 전달받은 유저 이메일, 비밀번호가 데이터베이스에 저장된 정보와 완벽히 일치하는 경우, 'ok'메세지가 응답에 포함되어야 합니다", async () => {
+        const res = await agent.post("/api/login").send({
+          email: "actorz@click.com",
+          password: "password",
+        });
+
+        expect(res.body.message).to.eql("ok");
+        expect(res.body.data).is.not.null;
+        expect(res.statusCode).to.eql(200);
+      });
+
+      it("로그인 요청시 전달받은 유저 이메일, 비밀번호가 데이터베이스에 저장된 정보와 완벽히 일치하는 경우, 응답에 accessToekn이 포함되어야 합니다", async () => {
+        const res = await agent.post("/api/login").send({
+          email: "actorz@click.com",
+          password: "password",
+        });
+        expect(res.body.data.accessToken).to.exist;
+      });
+
+      it("응답에 전달되는 엑세스 토큰은 유저정보가 담긴 JWT 토큰이여만 합니다.", async () => {
+        const res = await agent.post("/api/login").send({
+          email: "actorz@click.com",
+          password: "password",
+        });
+        const tokenData = verify(
+          res.body.data.accessToken,
+          process.env.ACCESS_SECRET
+        );
+        expect(tokenData).to.exist;
+        expect(Object.keys(tokenData)).to.eql([ // 마찬가지로 수정 필요함. 토큰 안에 내용 뭐가 들어갈지...
+          'id',
+          'userId',
+          'email',
+          'createdAt',
+          'updatedAt',
+          'iat',
+          'exp',
+        ]);
+      });
+      it("로그인 성공시 전달되는 응답객체에는 refreshToken이 존재해야 합니다.", async () => {
+        const res = await agent.post('/login').send({
+          email: "actorz@click.com",
+          password: "password",
+        });
+        const refreshTokenCookieExists = res.headers[
+          'set-cookie'
+        ].some((cookie) => cookie.includes('refreshToken'));
+
+        expect(refreshTokenCookieExists).to.eql(true);
+      });
     });
 
     describe("로그인 google, POST /api/login/google", () => {
