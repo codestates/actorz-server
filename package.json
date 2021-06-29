@@ -11,15 +11,12 @@
         "test": "NODE_ENV=test mocha '__tests__/server.test.js' --exit"
     },
     "dependencies": {
-        "aws-s3": "^2.0.5",
-        "aws-sdk": "^2.935.0",
         "axios": "^0.21.1",
         "cookie-parser": "^1.4.5",
         "cors": "^2.8.5",
         "dotenv": "^8.2.0",
         "express": "^4.17.1",
         "jsonwebtoken": "^8.5.1",
-        "mkcert": "^1.4.0",
         "mongodb": "^3.6.8",
         "mongoose": "^5.12.14",
         "multer": "^1.4.2",
@@ -29,8 +26,8 @@
         "chai": "^4.3.4",
         "eslint": "^7.24.0",
         "eslint-config-standard": "^16.0.2",
+        "factory-girl": "^5.0.4",
         "mocha": "^9.0.1",
-        "sequelize-cli": "^6.2.0",
         "supertest": "^6.1.3"
     }
 }

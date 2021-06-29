@@ -15,7 +15,7 @@ const seeder = async (callback) => {
   await callback();
 };
 
-seeder(() => {
+module.exports = seeder(() => {
   mongoose.disconnect((err) => {
     if(err) return console.log(err);
     console.log("successfully seeder");
