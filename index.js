@@ -1,4 +1,5 @@
 require("dotenv").config();
+require("./lib/mongooseConnector")();
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
@@ -19,10 +20,6 @@ const {
 
 const PORT = 3001;
 const app = express();
-mongoose.connect(mongodbUrl, mongodbConfig, (err) => {
-  if(err) return console.log(err);
-  console.log("successfully connect")
-});
 
 app.use(express.json());
 

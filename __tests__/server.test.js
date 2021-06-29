@@ -1,27 +1,29 @@
 const app = require("../index");
 const request = require("supertest");
-const agent = request(app);
-const { sign, verify } = require("jsonwebtoken");
-const factory = require("./helper/factory")
-const { expect, assert } = require("chai");
-const https = require("https");
+const { expect } = require("chai");
 const { sign, verify } = require('jsonwebtoken');
+const mongoose = require("mongoose");
+const https = require("https");
+const agent = request(app);
 
-process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = 0
-
-const dbConnector = require("../../lib/mongooseConnector");
+const dbConnector = require("../lib/mongooseConnector");
 
 process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0;
 
 describe("Actorz project test code", () => {
-  // before every describe
-  // let db;
-  // before( async () => {
-  //   db = await dbConnector();
-  // });
+  let connect = false;
+  before( async () => {
+    await dbConnector()
+    .then(() => connect = true)
+    .catch((err) => {
+      throw err;
+    });
+  });
 
   describe("MongoDB Connect", () => {
-    it("", () => {});
+    it("MongoDB에 연결", () => {
+      expect(connect).to.equal(true);
+    });
   });
 
   describe("Protocol - HTTP over Secure", () => {
@@ -229,4 +231,8 @@ describe("Actorz project test code", () => {
       });
     });
   });
+
+  after(async () => {
+    await mongoose.disconnect();
+  })
 });
