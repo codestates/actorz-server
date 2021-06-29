@@ -70,7 +70,7 @@ app.post("/api/portfolio/:user_id/delete", portfolio.delete);
 app.get("/api/portfolio/:user_id", portfolio.info);
 
 // S3
-app.post("/api/upload", s3.getUrl);
+app.get("/api/upload", s3.getUrl);
 
 let server;
 if(process.env.NODE_ENV === "production"){
@@ -84,7 +84,7 @@ if(process.env.NODE_ENV === "production"){
   });
 }else{
   app.use(cors({
-    origin:["https://localhost:3000"], //3000 for react server?
+    origin: "*", //3000 for react server?
     credentials:true,
     methods:["POST","GET","OPTIONS"]
   }));
