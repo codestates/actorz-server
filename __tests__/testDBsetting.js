@@ -19,6 +19,8 @@ const migrateAndseeds = async (callback) => {
   await post_userSeeds(userData._id);
   const postData = await postsSeeds(userData._id);
   await tagsSeeds(postData._id);
+
+  return userData._id;
 }
 
 module.exports = migrateAndseeds;
