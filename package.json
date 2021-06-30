@@ -8,7 +8,10 @@
         "migrate": "node mongodb/migrate.js",
         "migrate:undo": "node mongodb/migrateUndo.js",
         "seed": "node mongodb/seed.js",
-        "test": "NODE_ENV=test mocha '__tests__/server.test.js' --exit"
+        "test": "NODE_ENV=test mocha '__tests__/server.test.js' --timeout 3000 --exit",
+        "test:user": "NODE_ENV=test mocha '__tests__/user.test.js' --timeout 3000 --exit",
+        "test:post": "NODE_ENV=test mocha '__tests__/post.test.js' --timeout 3000 --exit"
+
     },
     "dependencies": {
         "aws-sdk": "^2.936.0",
