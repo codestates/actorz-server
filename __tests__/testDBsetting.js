@@ -1,7 +1,7 @@
 const { users, posts, post_user, tags, portfolio } = require("../mongodb/models");
 const { usersSeeds, portfolioSeeds, post_userSeeds, postsSeeds, tagsSeeds } = require("../mongodb/seedData");
 
-const migrateAndseeds = async (callback) => {
+const migrateAndseeds = async () => {
   await users.collection.drop();
   await posts.collection.drop();
   await post_user.collection.drop();

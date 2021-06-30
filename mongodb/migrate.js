@@ -1,4 +1,6 @@
-require("../lib/mongooseConnector")();
+require("../lib/mongooseConnector")(() => {
+  console.log("migrating...");
+});
 const mongoose = require("mongoose");
 const { users, posts, post_user, tags, portfolio } = require("./models");
 
