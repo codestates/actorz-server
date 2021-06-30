@@ -66,12 +66,12 @@ describe("Actorz project test code", () => {
       });
       
       it("이메일이 잘못된 경우: message:'Invalid user or Wrong password', status:401", async () => {
-        // testUserId = await users.findOne({
-        //   name: "kimcoding"
-        // }, (doc) => {
-        //   return doc;
-        // });
-        // console.log(testUserId)
+        testUserId = await users.findOne({
+          name: "kimcoding"
+        }, (doc) => {
+          return doc;
+        });
+        console.log(testUserId)
         const res = await agent.post("/api/login").send({
           email: "wrongEmail@click.com",
           password: "1234",
