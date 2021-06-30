@@ -1,24 +1,18 @@
-
+require("dotenv").config();
 const app = require("../index");
 const dbConnector = require("../lib/mongooseConnector");
 const testDBsetting = require("./testDBsetting");
-const { users, posts, tags, post_user, portfolio } = require("../mongodb/models");
-
+const { users, posts } = require("../mongodb/models");
 
 const request = require("supertest");
 const { expect } = require("chai");
-const { sign, verify } = require("jsonwebtoken");
+const { sign } = require("jsonwebtoken");
 const https = require("https");
-const nock = require("nock");
-const { google } = require("googleapis");
-
-const agent = request(app);
 
 process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0;
 
-const tokenBodyData = {
-  email: "kimcoding@gmail.com",
-};
+const agent = request(app);
+const tokenBodyData = { email: "kimcoding@gmail.com" };
 const accessToken = sign(tokenBodyData, process.env.ACCESS_SECRET, {expiresIn: "5m"});
 
 describe("Actorz project test code", () => {
@@ -126,7 +120,6 @@ describe("Actorz project test code", () => {
       });
 
       it("요청 헤더의 Authorization 속성에 유효한 토큰이 담겨 있을 경우, 'ok'메시지가 응답에 포함되어야 합니다", async () => {
-        const user = await users.findOne({ name: "kimcoding" });
         const headers = {
           "Authorization": `Bearer ${accessToken}`,
           "Content-Type": "application/json"
@@ -197,7 +190,6 @@ describe("Actorz project test code", () => {
       });
 
       it("요청 헤더의 Authorization 속성에 유효한 토큰이 담겨 있을 경우, 'ok'메시지가 응답에 포함되어야 합니다", async () => {
-        const user = await users.findOne({ name: "kimcoding" });
         const headers = {
           "Authorization": `Bearer ${accessToken}`,
           "Content-Type": "application/json"
@@ -230,7 +222,6 @@ describe("Actorz project test code", () => {
       });
 
       it("요청 헤더의 Authorization 속성에 유효한 토큰이 담겨 있을 경우, 'ok'메시지가 응답에 포함되어야 합니다", async () => {
-        const user = await users.findOne({ name: "kimcoding" });
         const headers = {
           "Authorization": `Bearer ${accessToken}`,
           "Content-Type": "application/json"
@@ -252,7 +243,6 @@ describe("Actorz project test code", () => {
         expect(noAuthRes.statusCode).to.eql(204);
       });
       it("해당 요청을 보낼 경우, 'like'또는'unlike'메시지가 응답에 포함되어야 합니다", async () => {
-        const user = await users.findOne({ name: "kimcoding" });
         const headers = {
           "Authorization": `Bearer ${accessToken}`,
           "Content-Type": "application/json"
@@ -292,7 +282,6 @@ describe("Actorz project test code", () => {
         expect(InvalidAuthRes.statusCode).to.eql(401);
       });
       it("요청 헤더의 Authorization 속성에 유효한 토큰이 담겨 있을 경우, 'ok'메시지가 응답에 포함되어야 합니다", async () => {
-        const user = await users.findOne({ name: "kimcoding" });
         const headers = {
           "Authorization": `Bearer ${accessToken}`,
           "Content-Type": "application/json"
@@ -334,7 +323,6 @@ describe("Actorz project test code", () => {
       });
       
       it("요청 헤더의 Authorization 속성에 유효한 토큰이 담겨 있을 경우, 'Successfully post delete'메시지가 응답에 포함되어야 합니다", async () => {
-        const user = await users.findOne({ name: "kimcoding" });
         const headers = {
           "Authorization": `Bearer ${accessToken}`,
           "Content-Type": "application/json"
