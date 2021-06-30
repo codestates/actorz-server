@@ -2,7 +2,7 @@ require("dotenv").config();
 const app = require("../index");
 const dbConnector = require("../lib/mongooseConnector");
 const testDBsetting = require("./testDBsetting");
-const { users, posts, tags, post_user, portfolio } = require("../mongodb/models");
+const { users } = require("../mongodb/models");
 
 
 const request = require("supertest");
@@ -10,15 +10,11 @@ const { expect } = require("chai");
 const { sign, verify } = require("jsonwebtoken");
 const https = require("https");
 const nock = require("nock");
-const { google } = require("googleapis");
-
-const agent = request(app);
 
 process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0;
 
-const tokenBodyData = {
-  email: "kimcoding@gmail.com",
-};
+const agent = request(app);
+const tokenBodyData = { email: "kimcoding@gmail.com" };
 const accessToken = sign(tokenBodyData, process.env.ACCESS_SECRET);
 
 describe("Actorz project test code", () => {
@@ -68,7 +64,6 @@ describe("Actorz project test code", () => {
         }, (doc) => {
           return doc;
         });
-        console.log(testUserId)
         const res = await agent.post("/api/login").send({
           email: "wrongEmail@click.com",
           password: "1234",
