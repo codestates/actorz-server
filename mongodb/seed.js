@@ -1,4 +1,6 @@
-require("../lib/mongooseConnector")();
+require("../lib/mongooseConnector")(() => {
+  console.log("planting seeds...");
+});
 const mongoose = require("mongoose");
 const { usersSeeds, portfolioSeeds, post_userSeeds, postsSeeds, tagsSeeds } = require("./seedData");
 
