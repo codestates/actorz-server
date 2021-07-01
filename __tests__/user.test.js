@@ -18,6 +18,8 @@ const accessToken = sign(tokenBodyData, process.env.ACCESS_SECRET);
 
 describe("Actorz project test code", () => {
   let db = null;
+  let testUser;
+  let changeActor;
 
   before( async () => {
     db = await dbConnector(() => {
@@ -58,11 +60,7 @@ describe("Actorz project test code", () => {
       });
       
       it("이메일이 잘못된 경우: message:'Invalid user or Wrong password', status:401", async () => {
-        testUserId = await users.findOne({
-          name: "kimcoding"
-        }, (doc) => {
-          return doc;
-        });
+        testUser = await users.findOne({ name: "kimcoding" }, (doc) => doc);
         const res = await agent.post("/api/login").send({
           email: "wrongEmail@click.com",
           password: "1234",
@@ -227,17 +225,17 @@ describe("Actorz project test code", () => {
       const actorSignUpRequest = {
         email: "signupActor@gmail.com",
         password: "1234",
-        name: "kimcoding",
+        name: "actor",
         company: null,
         provider: "local",
         gender: "male",
         dob: 1900-05-05
       };
   
-      const recruitorSignUpRequest = {
+      const recruiterSignUpRequest = {
         email: "signupRecruit@gmail.com",
         password: "1234",
-        name: "kimcoding",
+        name: "recruiter",
         company: null,
         provider: "local",
         gender: "male",
@@ -258,6 +256,11 @@ describe("Actorz project test code", () => {
       it("성공적인 회원가입: 배우", async () => {
         const res = await agent.post("/api/logout")
           .send(actorSignUpRequest);
+        
+        const newActor = await users.findOne({name: "actor"}, (doc) => doc);
+
+        expect(newActor).is.not.null;
+
         expect(res.body.message).to.eql("ok");
         expect(res.body.data).is.not.null;
         expect(Object.keys(res.body.data)).to.eql([
@@ -269,12 +272,17 @@ describe("Actorz project test code", () => {
   
       it("성공적인 회원가입: 리크루터", async () => {
         const res = await agent.post("/api/logout")
-          .send(recruitorSignUpRequest);
+          .send(recruiterSignUpRequest);
         expect(res.body.message).to.eql("ok");
         expect(res.body.data).is.not.null;
         expect(Object.keys(res.body.data)).to.eql([
           "id"
         ]);
+
+        const newRecruiter = await users.findOne({name: "recruiter"}, (doc) => doc);
+
+        expect(newRecruiter).is.not.null;
+        
         expect(res.body.data.id).is.not.null;
         expect(res.statusCode).to.eql(201);
       });
@@ -291,7 +299,7 @@ describe("Actorz project test code", () => {
     describe("유저정보, GET /api/user/:user_id", () => {
       it("유저정보 성공: data:{userInfo: ...}}, message:ok", async () => {
   
-        const res = await agent.get("/api/user/1")
+        const res = await agent.get(`/api/user/${testUser._id}`)
           .set({authorization: `Bearer ${accessToken}`});
   
         expect(res.body.message).to.eql("ok");
@@ -315,7 +323,7 @@ describe("Actorz project test code", () => {
       });
   
       it("권한없음: 응답코드 401, data: null, message: Authorization dont exist 를 받아야합니다", async () => {
-        const res = await agent.get("/api/user/1");
+        const res = await agent.get(`/api/user/${testUser._id}`);
         expect(res.body.data).is.null;
         expect(res.statusCode).to.eql(401);
         expect(res.body.message).to.eql("Authorization dont exist");
@@ -323,12 +331,12 @@ describe("Actorz project test code", () => {
     });
   
     
-    describe("유저정보 수정, POST /api/user/:user_id/update", () => {
+    describe("유저정보 수정, POST /api/user/:user_id/update", async () => {
       const actorUpdateRequest = {
         mainPic: "https://images.velog.io/images/dandelion/post/fc4ea522-d576-4896-9bdf-6f47635370d8/SSI_20141005135230_V.jpg",
         email: "signupActor22@gmail.com",
         password: "123456789",
-        name: "changedName",
+        name: "changedActor",
         company: "hell",
         provider: "local",
         gender: "male",
@@ -347,8 +355,10 @@ describe("Actorz project test code", () => {
         ]
       };
       
+      changeActor = await users.findOne({name: "actor"}, (doc) => doc);
+
       it("유저정보 수정 성공", async () => {
-        const res = await agent.post("/api/user/2/update")
+        const res = await agent.post(`/api/user/${changeActor._id}/update`)
         .set({authorization: `Bearer ${accessToken}`})
         .send(actorUpdateRequest);
         
@@ -372,7 +382,7 @@ describe("Actorz project test code", () => {
       });
       
       it("권한없음: 응답코드 401, data: null, message: Authorization dont exist 를 받아야합니다", async () => {
-        const res = await agent.post("/api/user/2/update")
+        const res = await agent.post(`/api/user/${changeActor}/update`)
         .send(actorUpdateRequest);
         expect(res.body.data).is.null;
         expect(res.statusCode).to.eql(401);
@@ -383,17 +393,23 @@ describe("Actorz project test code", () => {
   
   describe("회원탈퇴, POST /api/user/:user_id/delete", () => {
     it("로그인 상태가 아닐 때: 400, data: null, message: You are currently not logined", async () => {
-      const res = await agent.post("/api/logout");
-  
+      const res = await agent.post(`/api/user/${changeActor._id}/delete`);
+      
+      const deleteUser = await users.findOne({name: changeActor.name}, (doc) => doc);
+
+      expect(deleteUser).is.not.null;
       expect(res.body.message).to.eql("You are currently not logined");
       expect(res.body.data).is.null;
       expect(res.statusCode).to.eql(400);
     });
   
-    it("로그아웃 성공: 205, data안에 id 있어야 함, message: Successfully signed out", async () => {
-      const res = await agent.post("/api/user/1/delete")
+    it("회원탈퇴 성공: 205, data안에 id 있어야 함, message: Successfully signed out", async () => {
+      const res = await agent.post(`/api/user/${changeActor._id}/delete`)
         .set({authorization: `Bearer ${accessToken}`});
   
+      const deleteUser = await users.findOne({name: changeActor.name}, (doc) => doc);
+      
+      expect(deleteUser).is.null;
       expect(res.body.message).to.eql("Successfully signed out");
       expect(res.body.data).is.not.null;
       expect(Object.keys(res.body.data)).to.eql([
