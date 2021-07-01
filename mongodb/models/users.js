@@ -15,7 +15,6 @@ const UsersSchema = new Schema({
   },
   password: {
     type: String,
-    required: true,
     trim: true
   },
   name: {
@@ -79,6 +78,11 @@ const UsersSchema = new Schema({
   createdAt: {
     type: Date,
     default: Date.now
+  },
+  role: {
+    type: String,
+    enum: ["guest", "actor", "recruiter"],
+    default: "guest"
   }
 });
 
