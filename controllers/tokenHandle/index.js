@@ -1,27 +1,44 @@
 require("dotenv").config();
-const { sign, verify } = require("jsonwebtoken");
 const ACCESS_SECRET = process.env.ACCESS_SECRET;
+const REFRESH_SECRET = process.env.REFRESH_SECRET;
+
+const { sign, verify } = require("jsonwebtoken");
 
 module.exports = {
-  generateAccessToken: (data) => {
-    if(!data.provider){
-      data.provider = 'local'
-    }
-    if(!data.password){
-      data.password = null
-    }
-    return sign(data, ACCESS_SECRET, { expiresIn: 60*60*3 });
+  // generateAccessToken: (data) => {
+  //   return sign(data, ACCESS_SECRET, { expiresIn: 60*60*3 });
+  // },
+  generateRefreshToken: (data) => {
+    return sign(data, REFRESH_SECRET, { expiresIn: 60*60*6 });
   },
   isAuthorized: (req) => {
-    const authorization = req.headers['authorization'];
+    const authorization = req.headers["authorization"];
+
     if (!authorization) {
       return null;
+    }else{
+      const token = authorization.split(" ")[1];
+      try {
+        return verify(token, ACCESS_SECRET);
+      } catch (err) {
+        // return null if invalid token
+        return null;
+      }
     }
-    const token = authorization.split(' ')[1];
-    try {
-      return verify(token, ACCESS_SECRET);
-    } catch (err) {
-      // return null if invalid token
+  },
+  refreshToken: (req) => {
+    const cookieToken = req.cookies.refreshToken;
+    if(
+      !cookieToken &&
+      cookieToken === "invalidtoken"
+    ){
+      return null;
+    }
+    try{
+      const data = verify(cookieToken, REFRESH_SECRET);
+      const payload = { email: data.email };
+      return sign(payload, ACCESS_SECRET, { expiresIn: 60*60*3 });
+    }catch(err){
       return null;
     }
   }
