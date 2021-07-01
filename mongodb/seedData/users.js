@@ -13,7 +13,7 @@ module.exports = async () => {
       year: 16-12-01,
       type: "판타지"
     }],
-    recruitor: {
+    recruiter: {
       bName: "코드스테이츠-본점",
       bAddress: {
         city: "서울",

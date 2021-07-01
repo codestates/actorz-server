@@ -52,7 +52,7 @@ const UsersSchema = new Schema({
       }
     }]
   },
-  recruitor: {
+  recruiter: {
     type: {
       bName: String,
       bAddress: {
