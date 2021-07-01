@@ -5,9 +5,9 @@ const REFRESH_SECRET = process.env.REFRESH_SECRET;
 const { sign, verify } = require("jsonwebtoken");
 
 module.exports = {
-  // generateAccessToken: (data) => {
-  //   return sign(data, ACCESS_SECRET, { expiresIn: 60*60*3 });
-  // },
+  generateAccessToken: (data) => {
+    return sign(data, ACCESS_SECRET, { expiresIn: 60*60*3 });
+  },
   generateRefreshToken: (data) => {
     return sign(data, REFRESH_SECRET, { expiresIn: 60*60*6 });
   },
@@ -22,7 +22,23 @@ module.exports = {
         return verify(token, ACCESS_SECRET);
       } catch (err) {
         // return null if invalid token
-        return null;
+        const cookieToken = req.cookies.refreshToken;
+        if(
+          !cookieToken &&
+          cookieToken === "invalidtoken"
+        ){
+          return null;
+        }
+        try{
+          const data = verify(cookieToken, REFRESH_SECRET);
+          const payload = { 
+            id: data.id,
+            email: data.email 
+          };
+          return sign(payload, ACCESS_SECRET, { expiresIn: 60*60*3 });
+        }catch(err){
+          return null;
+        }
       }
     }
   },
@@ -36,7 +52,10 @@ module.exports = {
     }
     try{
       const data = verify(cookieToken, REFRESH_SECRET);
-      const payload = { email: data.email };
+      const payload = { 
+        id: data.id,
+        email: data.email 
+      };
       return sign(payload, ACCESS_SECRET, { expiresIn: 60*60*3 });
     }catch(err){
       return null;

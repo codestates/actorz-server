@@ -1,29 +1,30 @@
 require("dotenv").config();
 const app = require("../index");
 const dbConnector = require("../lib/mongooseConnector");
-const testDBsetting = require("./testDBsetting");
+// const testDBsetting = require("./testDBsetting");
 const { users } = require("../mongodb/models");
 
 const request = require("supertest");
 const { expect } = require("chai");
 const { sign, verify } = require("jsonwebtoken");
 const https = require("https");
-const nock = require("nock");
+// const nock = require("nock");
+// const { google } = require("googleapis");
 
 process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0;
 
 const agent = request(app);
-const tokenBodyData = { email: "kimcoding@gmail.com" };
-const accessToken = sign(tokenBodyData, process.env.ACCESS_SECRET);
+
 
 describe("Actorz project test code", () => {
   let db = null;
-  let testUser;
-  let changeActor;
+  let recruiter;
+  let actor;
+  let actorToken, recruiterToken;
 
   before( async () => {
     db = await dbConnector(() => {
-      testDBsetting();
+      // testDBsetting();
     });
     console.log("Preparing for testing...");
   });
@@ -40,10 +41,98 @@ describe("Actorz project test code", () => {
       expect(db.readyState).to.eql(1);
     });
   });
-
+  
   describe("Protocol - HTTP over Secure", () => {
     it("Server should use HTTPS protocol", () => {
       expect(app instanceof https.Server).to.eql(true);
+    });
+  });
+  
+  describe("회원가입, POST /api/signup", () => {
+    const actorSignUpRequest = {
+      email: "signupActor@gmail.com",
+      password: "1234",
+      name: "actor",
+      company: null,
+      provider: "local",
+      gender: false,
+      dob: 1900-05-05
+    };
+
+    const recruiterSignUpRequest = {
+      email: "signupRecruit@gmail.com",
+      password: "1234",
+      name: "recruiter",
+      company: null,
+      provider: "local",
+      gender: false,
+      dob: 1900-05-05,
+      recruiter: {
+        bName: "카카오",
+        dAddress: {
+          city: "제주",
+          street: "제주시 첨단로 242",
+          zipCode: "63309"
+        },
+        bEmail: "toesa@naver.com",
+        phoneNum: "010-0000-0000",
+        jobTitle: "인턴"
+      }
+    };
+
+    it("성공적인 회원가입: 배우", async () => {
+      const res = await agent.post("/api/signup")
+      .send(actorSignUpRequest);
+      
+      actor = await users.findOne({name: "actor"}, (doc) => doc);
+      actorToken = sign({
+        id: actor.id,
+        email: actor.email
+      }, process.env.ACCESS_SECRET, {expiresIn: 60*60*3});
+
+      expect(actor).is.not.null;
+
+      expect(res.body.message).to.eql("ok");
+      expect(res.body.data).is.not.null;
+      expect(Object.keys(res.body.data)).to.eql([
+        "id",
+        "postUserId"
+      ]);
+      expect(res.body.data.id).is.not.null;
+      expect(res.body.data.postUserId).is.not.null;
+      expect(res.statusCode).to.eql(201);
+    });
+
+    it("성공적인 회원가입: 리크루터", async () => {
+      const res = await agent.post("/api/signup")
+      .send(recruiterSignUpRequest);
+
+      recruiter = await users.findOne({name: "recruiter"}, (doc) => doc);
+      recruiterToken = sign({
+        id: recruiter.id,
+        email: recruiter.email
+      }, process.env.ACCESS_SECRET, {expiresIn: 60*60*3});
+
+      expect(recruiter).is.not.null;
+
+      expect(res.body.message).to.eql("ok");
+      expect(res.body.data).is.not.null;
+      expect(Object.keys(res.body.data)).to.eql([
+        "id",
+        "postUserId"
+      ]);
+      expect(res.body.data.id).is.not.null;
+      expect(res.body.data.postUserId).is.not.null;
+      expect(res.statusCode).to.eql(201);
+    });
+
+    it("회원가입 실패: 중복된 이메일", async () => {
+      const res = await agent.post("/api/signup")
+      .send(actorSignUpRequest);
+
+      expect(res.body.message).to.eql("이미 존재하는 이메일입니다");
+      expect(res.body.data).is.null;
+      expect(res.statusCode).to.eql(409);
     });
   });
 
@@ -51,20 +140,21 @@ describe("Actorz project test code", () => {
     describe("로그인, POST /api/login", () => {
       it("비밀번호가 잘못된 경우: message:'Invalid user or Wrong password', status:401", async () => {
         const res = await agent.post("/api/login").send({
-          email: "kimcoding@gmail.com",
-          password: "kimcoding@gmail.com",
+          email: "signupRecruit@gmail.com",
+          password: "signupRecruit@gmail.com",
         });
+
         expect(res.body.message).to.eql("Invalid user or Wrong password");
         expect(res.body.data).is.null;
         expect(res.statusCode).to.eql(401);
       });
       
       it("이메일이 잘못된 경우: message:'Invalid user or Wrong password', status:401", async () => {
-        testUser = await users.findOne({ name: "kimcoding" }, (doc) => doc);
         const res = await agent.post("/api/login").send({
           email: "wrongEmail@click.com",
           password: "1234",
         });
+
         expect(res.body.message).to.eql("Invalid user or Wrong password");
         expect(res.body.data).is.null;
         expect(res.statusCode).to.eql(401);
@@ -73,10 +163,10 @@ describe("Actorz project test code", () => {
   
       it("로그인 성공: 'ok'메세지", async () => {
         const res = await agent.post("/api/login").send({
-          email: "kimcoding@gmail.com",
+          email: "signupRecruit@gmail.com",
           password: "1234",
         });
-  
+        
         expect(res.body.message).to.eql("ok");
         expect(res.body.data).is.not.null;
         expect(res.statusCode).to.eql(200);
@@ -84,7 +174,7 @@ describe("Actorz project test code", () => {
   
       it("로그인 성공: accessToekn이 포함", async () => {
         const res = await agent.post("/api/login").send({
-          email: "kimcoding@gmail.com",
+          email: "signupRecruit@gmail.com",
           password: "1234",
         });
         expect(res.body.data.accessToken).to.exist;
@@ -92,7 +182,7 @@ describe("Actorz project test code", () => {
   
       it("로그인 성공: 엑세스 토큰: 이메일 담긴 JWT 토큰", async () => {
         const res = await agent.post("/api/login").send({
-          email: "kimcoding@gmail.com",
+          email: "signupRecruit@gmail.com",
           password: "1234",
         });
         const tokenData = verify(
@@ -101,13 +191,16 @@ describe("Actorz project test code", () => {
         );
         expect(tokenData).to.exist;
         expect(Object.keys(tokenData)).to.eql([
-          "email"
+          "id",
+          "email",
+          "iat",
+          "exp"
         ]);
       });
   
       it("로그인 성공:쿠키에 refreshToken", async () => {
         const res = await agent.post("/api/login").send({
-          email: "kimcoding@gmail.com",
+          email: "signupRecruit@gmail.com",
           password: "1234",
         });
         const refreshTokenCookieExists = res.headers[
@@ -125,83 +218,26 @@ describe("Actorz project test code", () => {
     };
   
     const accessTokenRequestData = {
-      code: process.env.KAKAO_CODE_TESTING,
-      grant_type: "authorization_code",
-      client_id: process.env.KAKAO_CLIENT_ID,
-      redirect_uri: process.env.KAKAO_REDIRECT_URI,
-      client_secret: process.env.KAKAO_CLIENT_SECRET
+      client_id: process.env.GOOGLE_CLIENT_ID,
+      client_secret: process.env.GOOGLE_CLIENT_SECRET,
+      code: "fake_auth_code"
     };
   
     const callbackRequestBody = {
       authorizationCode: "fake_auth_code"
     };
   
-    describe("로그인 kakao, POST /api/login/kakao", () => {
-      it("kakao access token 요청 처리", async () => {
-        const scope = nock("https://kauth.kakao.com")
-          .post("/oauth/token", accessTokenRequestData)
-          .reply(200, accessTokenResponseData);
-  
-        await agent.post("/api/login/kakao").send(callbackRequestBody);
-  
-        const ajaxCallCount = scope.interceptors[0].interceptionCounter;
-        expect(ajaxCallCount, "요구사항에 맞는 ajax 요청을 보내지 않았습니다.").to.eql(1);
-      });
-  
-      it("access token을 받아온 후, 클라이언트에 응답으로 전달", async () => {
-        const scope = nock("https://kauth.kakao.com")
-          .post("/oauth/token", accessTokenRequestData)
-          .reply(200, accessTokenResponseData);
-        
-        const res = await agent.post("/api/login/kakao").send(callbackRequestBody);
-  
-        const ajaxCallCount = scope.interceptors[0].interceptionCounter;
-        expect(ajaxCallCount, "요구사항에 맞는 ajax 요청을 보내지 않았습니다.").to.eql(1)
-        
-        expect(res.statusCode).to.eql(200 || 201);
-        expect(res.body.accessToken).to.eql("fake_access_token");
-        expect(res.body.message).to.eql("ok");
-      });
-    });
-  
     describe("로그인 google, POST /api/login/google", () => {
-      const CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
-      const CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
-      const REDIRECT_URI = process.env.GOOGLE_REDIRECT_URI;
-      
-      const googleAccessTokenRequest = {
-        code:"4/P7q7W91a-oMsCeLvIaQm6bTrgtp7",
-        client_id:CLIENT_ID,
-        client_secret:CLIENT_SECRET,
-        redirect_uri:REDIRECT_URI,
-        grant_type:"authorization_code",
-      };
-      
-      const googleAccessTokenResponse = {
-        access_token:"fake_access_token",
-        expires_in:3920,
-        token_type:"Bearer"
-      };
-  
+ 
       it("google access token 요청 처리", async () => {
-        const scope = nock('https://www.googleapis.com')
-          .post('/oauth2/v4/token', googleAccessTokenRequest)
-          .reply(200, googleAccessTokenResponse);
-        // console.log(scope)
-        const res = await agent.post("/api/login/kakao").send(callbackRequestBody);
-        const ajaxCallCount = scope.interceptors[0].interceptionCounter;
-        expect(ajaxCallCount, "요구사항에 맞는 ajax 요청을 보내지 않았습니다.").to.eql(1);
-  
-        expect(res.statusCode).to.eql(200 || 201);
-        expect(res.body.accessToken).to.eql("fake_access_token");
-        expect(res.body.message).to.eql("ok");
+
       });
     });
   
     describe("로그아웃, POST /api/logout", () => {
       it("로그아웃 성공: 205, data안에 id 있어야 함, message: Successfully signed out", async () => {
         const res = await agent.post("/api/logout")
-          .set({authorization: `Bearer ${accessToken}`});
+        .set({authorization: `Bearer ${actorToken}`});
   
         expect(res.body.message).to.eql("Successfully signed out");
         expect(res.body.data).is.not.null;
@@ -221,86 +257,12 @@ describe("Actorz project test code", () => {
       });
     });
   
-    describe("회원가입, POST /api/signup", () => {
-      const actorSignUpRequest = {
-        email: "signupActor@gmail.com",
-        password: "1234",
-        name: "actor",
-        company: null,
-        provider: "local",
-        gender: "male",
-        dob: 1900-05-05
-      };
-  
-      const recruiterSignUpRequest = {
-        email: "signupRecruit@gmail.com",
-        password: "1234",
-        name: "recruiter",
-        company: null,
-        provider: "local",
-        gender: "male",
-        dob: 1900-05-05,
-        recruiter: {
-          bName: "카카오",
-          dAddress: {
-            city: "제주",
-            street: "제주시 첨단로 242",
-            zipCode: "63309"
-          },
-          bEmail: "toesa@naver.com",
-          phoneNum: "010-0000-0000",
-          jobTitle: "인턴"
-        }
-      };
-  
-      it("성공적인 회원가입: 배우", async () => {
-        const res = await agent.post("/api/logout")
-          .send(actorSignUpRequest);
-        
-        const newActor = await users.findOne({name: "actor"}, (doc) => doc);
-
-        expect(newActor).is.not.null;
-
-        expect(res.body.message).to.eql("ok");
-        expect(res.body.data).is.not.null;
-        expect(Object.keys(res.body.data)).to.eql([
-          "id"
-        ]);
-        expect(res.body.data.id).is.not.null;
-        expect(res.statusCode).to.eql(201);
-      });
-  
-      it("성공적인 회원가입: 리크루터", async () => {
-        const res = await agent.post("/api/logout")
-          .send(recruiterSignUpRequest);
-        expect(res.body.message).to.eql("ok");
-        expect(res.body.data).is.not.null;
-        expect(Object.keys(res.body.data)).to.eql([
-          "id"
-        ]);
-
-        const newRecruiter = await users.findOne({name: "recruiter"}, (doc) => doc);
-
-        expect(newRecruiter).is.not.null;
-        
-        expect(res.body.data.id).is.not.null;
-        expect(res.statusCode).to.eql(201);
-      });
-  
-      it("회원가입 실패: 중복된 이메일", async () => {
-        const res = await agent.post("/api/logout")
-          .send(actorSignUpRequest);
-        expect(res.body.message).to.eql("이미 존재하는 이메일입니다");
-        expect(res.body.data).is.null;
-        expect(res.statusCode).to.eql(409);
-      });
-    });
   
     describe("유저정보, GET /api/user/:user_id", () => {
       it("유저정보 성공: data:{userInfo: ...}}, message:ok", async () => {
   
-        const res = await agent.get(`/api/user/${testUser._id}`)
-          .set({authorization: `Bearer ${accessToken}`});
+        const res = await agent.get(`/api/user/${actor.id}`)
+        .set({authorization: `Bearer ${actorToken}`});
   
         expect(res.body.message).to.eql("ok");
         expect(res.body.data).is.not.null;
@@ -323,7 +285,7 @@ describe("Actorz project test code", () => {
       });
   
       it("권한없음: 응답코드 401, data: null, message: Authorization dont exist 를 받아야합니다", async () => {
-        const res = await agent.get(`/api/user/${testUser._id}`);
+        const res = await agent.get(`/api/user/${actor.id}`);
         expect(res.body.data).is.null;
         expect(res.statusCode).to.eql(401);
         expect(res.body.message).to.eql("Authorization dont exist");
@@ -334,12 +296,12 @@ describe("Actorz project test code", () => {
     describe("유저정보 수정, POST /api/user/:user_id/update", async () => {
       const actorUpdateRequest = {
         mainPic: "https://images.velog.io/images/dandelion/post/fc4ea522-d576-4896-9bdf-6f47635370d8/SSI_20141005135230_V.jpg",
-        email: "signupActor22@gmail.com",
+        email: "signupActor@gmail.com",
         password: "123456789",
         name: "changedActor",
         company: "hell",
         provider: "local",
-        gender: "male",
+        gender: false,
         dob: 1900-05-05,
         careers: [
           {
@@ -354,14 +316,16 @@ describe("Actorz project test code", () => {
           }
         ]
       };
-      
-      changeActor = await users.findOne({name: "actor"}, (doc) => doc);
 
       it("유저정보 수정 성공", async () => {
-        const res = await agent.post(`/api/user/${changeActor._id}/update`)
-        .set({authorization: `Bearer ${accessToken}`})
+        const res = await agent.post(`/api/user/${actor.id}/update`)
+        .set({authorization: `Bearer ${actorToken}`})
         .send(actorUpdateRequest);
         
+        // console.log(res.body)
+        actor = await users.findOne({name: actorUpdateRequest.name});
+        expect(actor.name).to.eql("changedActor");
+
         expect(res.body.message).to.eql("ok");
         expect(res.body.data).is.not.null;
         expect(Object.keys(res.body.data)).to.eql([
@@ -382,8 +346,9 @@ describe("Actorz project test code", () => {
       });
       
       it("권한없음: 응답코드 401, data: null, message: Authorization dont exist 를 받아야합니다", async () => {
-        const res = await agent.post(`/api/user/${changeActor}/update`)
+        const res = await agent.post(`/api/user/${actor.id}/update`)
         .send(actorUpdateRequest);
+
         expect(res.body.data).is.null;
         expect(res.statusCode).to.eql(401);
         expect(res.body.message).to.eql("Authorization dont exist");
@@ -393,10 +358,9 @@ describe("Actorz project test code", () => {
   
   describe("회원탈퇴, POST /api/user/:user_id/delete", () => {
     it("로그인 상태가 아닐 때: 400, data: null, message: You are currently not logined", async () => {
-      const res = await agent.post(`/api/user/${changeActor._id}/delete`);
+      const res = await agent.post(`/api/user/${actor.id}/delete`);
       
-      const deleteUser = await users.findOne({name: changeActor.name}, (doc) => doc);
-
+      const deleteUser = await users.findOne({name: actor.name}, (doc) => doc);
       expect(deleteUser).is.not.null;
       expect(res.body.message).to.eql("You are currently not logined");
       expect(res.body.data).is.null;
@@ -404,11 +368,27 @@ describe("Actorz project test code", () => {
     });
   
     it("회원탈퇴 성공: 205, data안에 id 있어야 함, message: Successfully signed out", async () => {
-      const res = await agent.post(`/api/user/${changeActor._id}/delete`)
-        .set({authorization: `Bearer ${accessToken}`});
-  
-      const deleteUser = await users.findOne({name: changeActor.name}, (doc) => doc);
+      const res = await agent.post(`/api/user/${actor.id}/delete`)
+      .set({authorization: `Bearer ${actorToken}`});
+
+      const deleteUser = await users.findOne({name: actor.name}, (doc) => doc);
       
+      expect(deleteUser).is.null;
+      expect(res.body.message).to.eql("Successfully signed out");
+      expect(res.body.data).is.not.null;
+      expect(Object.keys(res.body.data)).to.eql([
+        "id"
+      ]);
+      expect(res.body.data.id).is.not.null;
+      expect(res.statusCode).to.eql(205);
+    });
+
+    it("회원탈퇴 성공: 리크루터: 205, data안에 id 있어야 함, message: Successfully signed out", async () => {
+      const res = await agent.post(`/api/user/${recruiter.id}/delete`)
+      .set({authorization: `Bearer ${recruiterToken}`});
+
+      const deleteUser = await users.findOne({name: recruiter.name}, (doc) => doc);
+      // console.log(deleteUser)
       expect(deleteUser).is.null;
       expect(res.body.message).to.eql("Successfully signed out");
       expect(res.body.data).is.not.null;
@@ -420,4 +400,3 @@ describe("Actorz project test code", () => {
     });
   });
 });
-
