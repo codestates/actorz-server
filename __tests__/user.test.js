@@ -4,7 +4,6 @@ const dbConnector = require("../lib/mongooseConnector");
 const testDBsetting = require("./testDBsetting");
 const { users } = require("../mongodb/models");
 
-
 const request = require("supertest");
 const { expect } = require("chai");
 const { sign, verify } = require("jsonwebtoken");
@@ -243,7 +242,7 @@ describe("Actorz project test code", () => {
         provider: "local",
         gender: "male",
         dob: 1900-05-05,
-        recruitor: {
+        recruiter: {
           bName: "카카오",
           dAddress: {
             city: "제주",
