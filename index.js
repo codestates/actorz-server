@@ -4,15 +4,7 @@ const cors = require("cors");
 const fs = require("fs");
 const https = require("https");
 
-const { 
-  user, 
-  like, 
-  post, 
-  oauth, 
-  portfolio,
-  s3,
-  search,
-} = require("./controllers");
+const { user, like, post, oauth, portfolio, s3, search } = require("./controllers");
 
 const PORT = 3001;
 const app = express();
@@ -49,7 +41,7 @@ app.get("/api/like/:user_id", like.myLike);
 app.post("/api/post/create", post.create);
 app.post("/api/post/:post_id/delete", post.delete);
 app.post("/api/post/:post_id/update", post.update);
-app.get("/api/post/:user_id", post.myPost);
+app.get("/api/post/user/:user_id", post.myPost);
 app.get("/api/post/:post_id", post.getPost);
 app.get("/api/post", post.getPostList);
 
