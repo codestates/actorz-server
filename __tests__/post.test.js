@@ -107,11 +107,12 @@ describe("Actorz project test code", () => {
 
     describe("post 생성, POST /api/post/create", () => {
       const bodyData = {
-        type: "img",
-        path: "https://pbs.twimg.com/media/D-KFOUSU4AEKYkp.jpg",
+        media: [{
+          type: "img",
+          path: "https://pbs.twimg.com/media/D-KFOUSU4AEKYkp.jpg"
+        }],
         content: "귀엽게 째려보는 고양이",
-        genre: "시크",
-        tags: ["레깨비"]
+        genre: "판타지"
       };
       it("요청 헤더의 Authorization 속성이 없을 경우, 'Authorization dont exist'메세지가 응답에 포함되어야 합니다", async () => {
         const noAuthRes = await agent.post("/api/post/create")
@@ -245,11 +246,12 @@ describe("Actorz project test code", () => {
 
     describe("post 수정, POST /api/post/:post_id/update", () => {
       const bodyData = {
-        type: "img",
-        path: "https://pbs.twimg.com/media/D-KFOUSU4AEKYkp.jpg",
+        media: [{
+          type: "img",
+          path: "https://pbs.twimg.com/media/D-KFOUSU4AEKYkp.jpg"
+        }],
         content: "귀엽게 째려보는 세상 귀여운 고양이",
-        genre: "시크",
-        tags: ["미깨비"]
+        genre: "판타지"
       };
       let res;
       it("요청 헤더의 Authorization 속성이 없을 경우, 'Authorization dont exist'메세지가 응답에 포함되어야 합니다", async () => {;
@@ -280,11 +282,10 @@ describe("Actorz project test code", () => {
 
       it("요청에 성공하였을 경우, 변경된 내용이 응답에 포함되어야 합니다", () => {
         expect(res.body.data.post).is.not.null;
-        expect(res.body.data.post.type).to.eql(post.type);
-        expect(res.body.data.post.path).to.eql(post.path);
+        expect(res.body.data.post.media.type).to.eql(post.type);
+        expect(res.body.data.post.media.path).to.eql(post.path);
         expect(res.body.data.post.content).to.eql(post.content);
         expect(res.body.data.post.genre).to.eql(post.genre);
-        expect(res.body.data.post.tags.length).to.eql(post.tags.length);
       });
     });
 

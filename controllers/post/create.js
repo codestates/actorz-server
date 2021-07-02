@@ -11,16 +11,17 @@ module.exports = async (req, res) => {
         message: "Authorization dont exist"
       });
     }
-    const post_id = await posts.create(req.body)
-    .then((result) => result._id);
-    
+
+    const newPost = await new posts(req.body)
+    newPost.save();
+
     const conditions = { users: tokenBodyData.user_id };
-    const update = { $push: { posts: post_id } };
+    const update = { $push: { posts: newPost._id } };
     await post_user.findOneAndUpdate(conditions, update, findAndModifyConfig);
-    
+
     res.status(201).send({
       data: {
-        id: post_id
+        id: newPost._id
       },
       message: "ok"
     });

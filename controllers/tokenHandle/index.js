@@ -22,14 +22,14 @@ module.exports = {
         return verify(token, ACCESS_SECRET);
       } catch (err) {
         // return null if invalid token
-        const cookieToken = req.cookies.refreshToken;
-        if(
-          !cookieToken &&
-          cookieToken === "invalidtoken"
-        ){
-          return null;
-        }
         try{
+          const cookieToken = req.cookies.refreshToken;
+          if(
+            !cookieToken &&
+            cookieToken === "invalidtoken"
+            ){
+            return null;
+          }
           const data = verify(cookieToken, REFRESH_SECRET);
           const payload = { 
             id: data.id,

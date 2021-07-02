@@ -1,8 +1,9 @@
 const { portfolio } = require("../models");
 
-module.exports = async (user_id) => {
+module.exports = async (user_id, post_id) => {
   const seedData = {
-    user_id
+    user_id,
+    posts: [post_id]
   };
   const portfolioData = await new portfolio(seedData);
 

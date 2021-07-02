@@ -6,10 +6,10 @@ const { usersSeeds, portfolioSeeds, post_userSeeds, postsSeeds, tagsSeeds } = re
 
 const seeder = async (callback) => {
   const userData = await usersSeeds();
-  await portfolioSeeds(userData._id);
   await post_userSeeds(userData._id);
-  const postData = await postsSeeds(userData._id);
-  await tagsSeeds(postData._id);
+  const tagData = await tagsSeeds();
+  const postData = await postsSeeds(userData._id, tagData._id);
+  await portfolioSeeds(userData._id, postData._id);
 
   await callback();
 };

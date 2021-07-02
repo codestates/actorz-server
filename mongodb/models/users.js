@@ -26,7 +26,7 @@ const UsersSchema = new Schema({
   provider: {
     type: String,
     required: true,
-    enum: ["local", "google", "kakao"]
+    enum: ["local", "google", "naver"]
   },
   gender: {
     type: Boolean,
@@ -36,18 +36,25 @@ const UsersSchema = new Schema({
     type: Date,
     required: true
   },
+  role: {
+    type: String,
+    enum: ["guest", "actor", "recruiter"],
+    required: true
+  },
   careers: {
     type: [{
       title: {
         type: String,
-        required: true
+        required: true,
+        unique: true
       },
       year: {
         type: Date,
         required: true
       },
       type: {
-        type: [String],
+        type: String,
+        enum: ["드라마", "영화", "뮤지컬", "연극", "광고", "뮤직비디오"],
         required: true
       }
     }]
@@ -73,17 +80,17 @@ const UsersSchema = new Schema({
       },
       bEmail: String,
       phoneNum: String,
-      jobTitle: String
+      jobTitle: String,
+      bNumber: String,
+      bNumberCert: {
+        type: Boolean,
+        required: true
+      }
     }
   },
   createdAt: {
     type: Date,
     default: Date.now
-  },
-  role: {
-    type: String,
-    enum: ["guest", "actor", "recruiter"],
-    default: "guest"
   }
 });
 UsersSchema.plugin(findOrCreate);
