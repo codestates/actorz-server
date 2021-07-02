@@ -25,7 +25,8 @@ const PostsSchema = new Schema({
     type: [{
       user_id: {
         type: ObjectId,
-        ref: "users"
+        ref: "users",
+        unique: true
       }
     }]
   },
