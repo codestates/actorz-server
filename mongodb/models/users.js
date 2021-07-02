@@ -1,4 +1,5 @@
 const { model, Schema } = require("mongoose")
+const findOrCreate = require ("mongoose-findorcreate")
 
 const ObjectId = Schema.ObjectId;
 const UsersSchema = new Schema({
@@ -46,7 +47,7 @@ const UsersSchema = new Schema({
         required: true
       },
       type: {
-        type: String,
+        type: [String],
         required: true
       }
     }]
@@ -85,5 +86,5 @@ const UsersSchema = new Schema({
     default: "guest"
   }
 });
-
+UsersSchema.plugin(findOrCreate);
 module.exports = model("users", UsersSchema);
