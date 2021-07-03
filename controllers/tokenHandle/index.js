@@ -14,20 +14,20 @@ module.exports = {
   isAuthorized: (req) => {
     const authorization = req.headers["authorization"];
 
-    if (!authorization) {
+    if(!authorization){
       return null;
     }else{
       const token = authorization.split(" ")[1];
-      try {
+      try{
         return verify(token, ACCESS_SECRET);
-      } catch (err) {
+      }catch(err){
         // return null if invalid token
         try{
           const cookieToken = req.cookies.refreshToken;
           if(
             !cookieToken &&
             cookieToken === "invalidtoken"
-            ){
+          ){
             return null;
           }
           const data = verify(cookieToken, REFRESH_SECRET);

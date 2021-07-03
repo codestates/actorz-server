@@ -232,13 +232,13 @@ describe("Actorz project test code", () => {
         const noAuthRes = await agent.post(`/api/post/${post_id}/islike`);
         expect(noAuthRes.body.message).to.eql("not found");
         expect(noAuthRes.body.data).is.null;
-        expect(noAuthRes.statusCode).to.eql(204);
+        expect(noAuthRes.statusCode).to.eql(202);
       });
 
       it("해당 요청을 보낼 경우, 'like'또는'unlike'메시지가 응답에 포함되어야 합니다", async () => {
         const res = await agent.post(`/api/post/${post_id}/islike`)
         .set({"Authorization": `Bearer ${accessToken}`});
-        expect(res.body.message).to.eql("like" || "unlike");
+        expect(res.body.message).to.be.oneOf(["like", "unlike"]);
         expect(res.body.data.id).to.eql(post_id);
         expect(res.statusCode).to.eql(200);
       });
