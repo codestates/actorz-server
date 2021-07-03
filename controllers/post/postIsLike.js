@@ -10,7 +10,7 @@ module.exports = async (req, res) => {
         data: null,
         message: "not found"
       })
-    }
+    };
 
     const postDate = await posts.findOne({ 
       "_id": post_id,
@@ -23,18 +23,19 @@ module.exports = async (req, res) => {
         },
         message: "like"
       });
-    }else{
-      return res.status(200).send({
-        data: {
-          id: post_id
-        },
-        message: "unlike"
-      });
     };
+
+    res.status(200).send({
+      data: {
+        id: post_id
+      },
+      message: "unlike"
+    });
+
   }catch(err){
     res.status(500).send({
       data: null,
       message: "Server Error"
     });
-  }
+  };
 };

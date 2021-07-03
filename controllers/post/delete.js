@@ -10,7 +10,7 @@ module.exports = async (req, res) => {
         data: null,
         message: "Authorization dont exist"
       });
-    }
+    };
 
     await posts.findByIdAndDelete(post_id)
     .then((result) => {
@@ -21,10 +21,11 @@ module.exports = async (req, res) => {
         message: "Successfully post delete"
       });
     });
+
   }catch(err){
     res.status(500).send({
       data: null,
       message: "Server Error"
     });
-  }
+  };
 };

@@ -10,7 +10,7 @@ module.exports = async (req, res) => {
         data: null,
         message: "Authorization dont exist"
       });
-    }
+    };
     
     const postDate = await posts.findOne({
       "_id": post_id,
@@ -30,18 +30,20 @@ module.exports = async (req, res) => {
         }
       }
     };
-    await posts.updateOne({ _id: post_id}, update);
-
-    res.status(201).send({
-      data: {
-        id: post_id
-      },
-      message: "ok"
+    await posts.updateOne({ _id: post_id}, update)
+    .then(() => {
+      res.status(201).send({
+        data: {
+          id: post_id
+        },
+        message: "ok"
+      });
     });
+
   }catch(err){
     res.status(500).send({
       data: null,
       message: "Server Error"
     });
-  }
+  };
 };

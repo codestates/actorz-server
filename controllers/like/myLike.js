@@ -11,18 +11,21 @@ module.exports = async (req, res) => {
         message: "Invalid user ID"
       });
     };
-    const postsData = await posts.find({ "likes.user_id": user_id });
 
-    res.status(200).send({
-      data: {
-        posts: postsData
-      },
-      message: "ok"
+    await posts.find({ "likes.user_id": user_id })
+    .then((postsData) => {
+      res.status(200).send({
+        data: {
+          posts: postsData
+        },
+        message: "ok"
+      });
     });
+
   }catch(err){
     res.status(500).send({
       data: null,
       message: "Server Error"
     });
-  }
+  };
 };

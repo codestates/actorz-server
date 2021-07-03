@@ -10,25 +10,27 @@ module.exports = async (req, res) => {
         data: null,
         message: "Authorization dont exist"
       });
-    }
+    };
 
-    const newPost = await new posts(req.body)
+    const newPost = await new posts(req.body);
     newPost.save();
 
     const conditions = { users: tokenBodyData.user_id };
     const update = { $push: { posts: newPost._id } };
-    await post_user.findOneAndUpdate(conditions, update, findAndModifyConfig);
-
-    res.status(201).send({
-      data: {
-        id: newPost._id
-      },
-      message: "ok"
+    await post_user.findOneAndUpdate(conditions, update, findAndModifyConfig)
+    .then(() => {
+      res.status(201).send({
+        data: {
+          id: newPost._id
+        },
+        message: "ok"
+      });
     });
+    
   }catch(err){
     res.status(500).send({
       data: null,
       message: "Server Error"
     });
-  }
+  };
 };

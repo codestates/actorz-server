@@ -11,7 +11,7 @@ module.exports = async (req, res) => {
         data: null,
         message: "Authorization dont exist"
       });
-    }
+    };
 
     await posts.findByIdAndUpdate(post_id, req.body, findAndModifyConfig)
     .then((result) => {
@@ -22,10 +22,11 @@ module.exports = async (req, res) => {
         message: "ok"
       });
     });
+
   }catch(err){
     res.status(500).send({
       data: null,
       message: "Server Error"
     });
-  }
+  };
 };

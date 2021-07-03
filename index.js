@@ -37,6 +37,9 @@ app.post("/api/post/:post_id/unlike", post.postUnLike);
 app.post("/api/post/:post_id/islike", post.postIsLike); // 필요?
 app.get("/api/like/:user_id", like.myLike);
 
+// SEARCH
+app.get("/api/post/search", search.search);
+
 // POST
 app.post("/api/post/create", post.create);
 app.post("/api/post/:post_id/delete", post.delete);
@@ -44,9 +47,6 @@ app.post("/api/post/:post_id/update", post.update);
 app.get("/api/post/user/:user_id", post.myPost);
 app.get("/api/post/:post_id", post.getPost);
 app.get("/api/post", post.getPostList);
-
-// SEARCH
-app.get("/api/post/search", search.search);
 
 // PORTFOLIO
 app.post("/api/portfolio/:user_id/create", portfolio.create);

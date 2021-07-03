@@ -317,13 +317,15 @@ describe("Actorz project test code", () => {
     describe("검색, GET /api/post/search", () => {
       let res;
       it("해당 요청을 보낼 경우, 'ok'메세지가 응답에 포함되어야 합니다", async () => {
-        res = await agent.get("/api/post/search");
+        const searchName = "kimcoding";
+        const searchContent = "고양이";
+        res = await agent.get(`/api/post/search?name=${searchName}&content=${encodeURI(searchContent)}`);
         expect(res.body.message).to.eql("ok");
         expect(res.body.data).is.not.null;
         expect(res.statusCode).to.eql(200);
       });
 
-      it("해당 요청을 보낼 경우, array type의 posts가 응답에 포함되어야 합니다", () => {
+      it("해당 요청을 보낼 경우, 검색한 유저의 post들이 posts에 담아 응답에 포함되어야 합니다", () => {
         expect(Array.isArray(res.body.data.posts)).to.eql(true);
       });
     });
