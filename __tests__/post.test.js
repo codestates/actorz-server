@@ -45,7 +45,7 @@ describe("Actorz project test code", () => {
   beforeEach((done) => {
     setTimeout(() => {
       done();
-    },500)
+    },1000)
   })
 
   describe("MongoDB Connect", () => {
@@ -276,16 +276,16 @@ describe("Actorz project test code", () => {
         .send(bodyData)
         .set({"Authorization": `Bearer ${accessToken}`});
         expect(res.body.message).to.eql("ok");
-        expect(res.body.data.id).to.eql(post_id);
+        expect(res.body.data.post._id).to.eql(post_id);
         expect(res.statusCode).to.eql(200);
       });
-
+      
       it("요청에 성공하였을 경우, 변경된 내용이 응답에 포함되어야 합니다", () => {
         expect(res.body.data.post).is.not.null;
-        expect(res.body.data.post.media.type).to.eql(post.type);
-        expect(res.body.data.post.media.path).to.eql(post.path);
-        expect(res.body.data.post.content).to.eql(post.content);
-        expect(res.body.data.post.genre).to.eql(post.genre);
+        expect(res.body.data.post.media.type).to.eql(bodyData.media.type);
+        expect(res.body.data.post.media.path).to.eql(bodyData.media.path);
+        expect(res.body.data.post.content).to.eql(bodyData.content);
+        expect(res.body.data.post.genre).to.eql(bodyData.genre);
       });
     });
 
