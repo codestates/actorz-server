@@ -9,7 +9,8 @@ module.exports = {
   },
   oauth: {
     googleLogin: require("./oauth/googleLogin"),
-    kakaoLogin: require("./oauth/kakaoLogin")
+    naverLogin: require("./oauth/naverLogin"),
+    naverLoginCallback: require("./oauth/naverLoginCallback")
   },
   like: {
     myLike: require("./like/myLike")
