@@ -11,24 +11,22 @@ module.exports = async (req, res) => {
         message: "Invalid user ID"
       });
     };
-    const post_userData = await post_user.findOne({ "users": user_id });
-    const postsData = [];
 
-    for(let el of post_userData.posts){
-      const postData = await posts.findById(el);
-      postsData.push(postData);
-    };
-
-    res.status(200).send({
-      data: {
-        posts: postsData
-      },
-      message: "ok"
+    await post_user.findOne({ "users": user_id })
+    .then(async (post_userData) => await posts.find({ _id: post_userData.posts }))
+    .then((postsData) => {
+      res.status(200).send({
+        data: {
+          posts: postsData
+        },
+        message: "ok"
+      });
     });
+
   }catch(err){
     res.status(500).send({
       data: null,
       message: "Server Error"
     });
-  }
+  };
 };

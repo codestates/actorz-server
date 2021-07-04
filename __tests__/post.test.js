@@ -21,15 +21,14 @@ describe("Actorz project test code", () => {
   let post_id;
 
   before( async () => {
-    db = await dbConnector(() => {
-      testDBsetting();
-    });
+    db = await dbConnector();
+    testDBsetting();
     console.log("Preparing for testing...");
   });
 
   before((done) => {
-    setTimeout( async () => {
-      await users.findOne({ name: "kimcoding" })
+    setTimeout(() => {
+      users.findOne({ name: "kimcoding" })
       .then((result) => {
         user_id = result._id;
         tokenBodyData = {
@@ -37,15 +36,15 @@ describe("Actorz project test code", () => {
           email: result.email
         };
         accessToken = sign(tokenBodyData, process.env.ACCESS_SECRET, {expiresIn: "5m"});
-        done();
       })
-    }, 1500);
+      done();
+    }, 3500);
   })
 
   beforeEach((done) => {
     setTimeout(() => {
       done();
-    },500)
+    },1000)
   })
 
   describe("MongoDB Connect", () => {
@@ -107,11 +106,12 @@ describe("Actorz project test code", () => {
 
     describe("post 생성, POST /api/post/create", () => {
       const bodyData = {
-        type: "img",
-        path: "https://pbs.twimg.com/media/D-KFOUSU4AEKYkp.jpg",
+        media: [{
+          type: "img",
+          path: "https://pbs.twimg.com/media/D-KFOUSU4AEKYkp.jpg"
+        }],
         content: "귀엽게 째려보는 고양이",
-        genre: "시크",
-        tags: ["레깨비"]
+        genre: "판타지"
       };
       it("요청 헤더의 Authorization 속성이 없을 경우, 'Authorization dont exist'메세지가 응답에 포함되어야 합니다", async () => {
         const noAuthRes = await agent.post("/api/post/create")
@@ -231,13 +231,13 @@ describe("Actorz project test code", () => {
         const noAuthRes = await agent.post(`/api/post/${post_id}/islike`);
         expect(noAuthRes.body.message).to.eql("not found");
         expect(noAuthRes.body.data).is.null;
-        expect(noAuthRes.statusCode).to.eql(204);
+        expect(noAuthRes.statusCode).to.eql(202);
       });
 
       it("해당 요청을 보낼 경우, 'like'또는'unlike'메시지가 응답에 포함되어야 합니다", async () => {
         const res = await agent.post(`/api/post/${post_id}/islike`)
         .set({"Authorization": `Bearer ${accessToken}`});
-        expect(res.body.message).to.eql("like" || "unlike");
+        expect(res.body.message).to.be.oneOf(["like", "unlike"]);
         expect(res.body.data.id).to.eql(post_id);
         expect(res.statusCode).to.eql(200);
       });
@@ -245,11 +245,12 @@ describe("Actorz project test code", () => {
 
     describe("post 수정, POST /api/post/:post_id/update", () => {
       const bodyData = {
-        type: "img",
-        path: "https://pbs.twimg.com/media/D-KFOUSU4AEKYkp.jpg",
+        media: [{
+          type: "img",
+          path: "https://pbs.twimg.com/media/D-KFOUSU4AEKYkp.jpg"
+        }],
         content: "귀엽게 째려보는 세상 귀여운 고양이",
-        genre: "시크",
-        tags: ["미깨비"]
+        genre: "판타지"
       };
       let res;
       it("요청 헤더의 Authorization 속성이 없을 경우, 'Authorization dont exist'메세지가 응답에 포함되어야 합니다", async () => {;
@@ -274,17 +275,16 @@ describe("Actorz project test code", () => {
         .send(bodyData)
         .set({"Authorization": `Bearer ${accessToken}`});
         expect(res.body.message).to.eql("ok");
-        expect(res.body.data.id).to.eql(post_id);
+        expect(res.body.data.post._id).to.eql(post_id);
         expect(res.statusCode).to.eql(200);
       });
-
+      
       it("요청에 성공하였을 경우, 변경된 내용이 응답에 포함되어야 합니다", () => {
         expect(res.body.data.post).is.not.null;
-        expect(res.body.data.post.type).to.eql(post.type);
-        expect(res.body.data.post.path).to.eql(post.path);
-        expect(res.body.data.post.content).to.eql(post.content);
-        expect(res.body.data.post.genre).to.eql(post.genre);
-        expect(res.body.data.post.tags.length).to.eql(post.tags.length);
+        expect(res.body.data.post.media.type).to.eql(bodyData.media.type);
+        expect(res.body.data.post.media.path).to.eql(bodyData.media.path);
+        expect(res.body.data.post.content).to.eql(bodyData.content);
+        expect(res.body.data.post.genre).to.eql(bodyData.genre);
       });
     });
 
@@ -316,13 +316,15 @@ describe("Actorz project test code", () => {
     describe("검색, GET /api/post/search", () => {
       let res;
       it("해당 요청을 보낼 경우, 'ok'메세지가 응답에 포함되어야 합니다", async () => {
-        res = await agent.get("/api/post/search");
+        const searchName = "kimcoding";
+        const searchContent = "고양이";
+        res = await agent.get(`/api/post/search?name=${searchName}&content=${encodeURI(searchContent)}`);
         expect(res.body.message).to.eql("ok");
         expect(res.body.data).is.not.null;
         expect(res.statusCode).to.eql(200);
       });
 
-      it("해당 요청을 보낼 경우, array type의 posts가 응답에 포함되어야 합니다", () => {
+      it("해당 요청을 보낼 경우, 검색한 유저의 post들이 posts에 담아 응답에 포함되어야 합니다", () => {
         expect(Array.isArray(res.body.data.posts)).to.eql(true);
       });
     });
