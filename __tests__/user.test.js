@@ -287,6 +287,7 @@ describe("Actorz project test code", () => {
         expect(Object.keys(res.body.data.userInfo)).to.eql([
           "id",
           "mainPic",
+          "role",
           "email",
           "name",
           "company",
@@ -349,6 +350,7 @@ describe("Actorz project test code", () => {
         expect(Object.keys(res.body.data.userInfo)).to.eql([
           "id",
           "mainPic",
+          "role",
           "email",
           "name",
           "company",
