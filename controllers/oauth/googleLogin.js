@@ -1,22 +1,24 @@
-const { users } = require("../../mongodb/models");
+const { users, post_user } = require("../../mongodb/models");
 const { generateAccessToken, generateRefreshToken } = require("../tokenHandle");
-
 const { OAuth2Client } = require("google-auth-library");
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 module.exports = async (req, res) => {
     const { token }  = req.body
+    console.log(req.body)
     const ticket = await client.verifyIdToken({
         idToken: token,
         audience: process.env.GOOGLE_CLIENT_ID
     });
-    const { email } = ticket.getPayload();  
-
+    const { email, name } = ticket.getPayload();  
+    console.log(ticket.getPayload())
     await users.findOrCreate({
-      email: email
+      email: email,
     }, {
       provider: "google",
-      role: "guest"
+      dob: new Date(),
+      gender: false,
+      name: "name"
     }).then( async ({ doc, created }) => {
       const payload = {
         id: doc.id,
@@ -26,7 +28,7 @@ module.exports = async (req, res) => {
       const accessToken = generateAccessToken(payload);
       res.cookie("refreshToken", refreshToken, {
         domain: "localhost",
-        path: "/api/login",
+        path: "/api/login/google",
         maxAge: 24 * 6 * 60 * 10000,
         sameSite: "None",
         httpOnly: true,
