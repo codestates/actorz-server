@@ -21,15 +21,14 @@ describe("Actorz project test code", () => {
   let post_id;
 
   before( async () => {
-    db = await dbConnector(() => {
-      testDBsetting();
-    });
+    db = await dbConnector();
+    testDBsetting();
     console.log("Preparing for testing...");
   });
 
   before((done) => {
-    setTimeout( async () => {
-      await users.findOne({ name: "kimcoding" })
+    setTimeout(() => {
+      users.findOne({ name: "kimcoding" })
       .then((result) => {
         user_id = result._id;
         tokenBodyData = {
@@ -37,9 +36,9 @@ describe("Actorz project test code", () => {
           email: result.email
         };
         accessToken = sign(tokenBodyData, process.env.ACCESS_SECRET, {expiresIn: "5m"});
-        done();
       })
-    }, 1500);
+      done();
+    }, 3500);
   })
 
   beforeEach((done) => {

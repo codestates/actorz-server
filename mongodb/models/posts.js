@@ -3,6 +3,20 @@ const { model, Schema } = require("mongoose")
 const ObjectId = Schema.ObjectId;
 const PostsSchema = new Schema({
   author: ObjectId,
+  userInfo: {
+    type: {
+      user_id: {
+        type: ObjectId,
+        ref: "users",
+        required: true
+      },
+      name: {
+        type: String,
+        required: true
+      }
+    },
+    required: true
+  },
   media: {
     type: [{
       type: {

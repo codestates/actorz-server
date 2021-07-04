@@ -8,7 +8,7 @@ const seeder = async (callback) => {
   const userData = await usersSeeds();
   await post_userSeeds(userData._id);
   const tagData = await tagsSeeds();
-  const postData = await postsSeeds(userData._id, tagData._id);
+  const postData = await postsSeeds(userData._id, userData.name, tagData._id);
   await portfolioSeeds(userData._id, postData._id);
 
   await callback();

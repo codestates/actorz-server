@@ -17,18 +17,38 @@ const accessToken = sign(tokenBodyData, process.env.ACCESS_SECRET, {expiresIn: "
 
 describe("Actorz project test code", () => {
   let db = null;
+  let user_id;
+  let password;
+  let tokenBodyData;
+  let accessToken;
+  let post_id;
 
   before( async () => {
-    db = await dbConnector(async () => {
-      testDBsetting();
-    });
+    db = await dbConnector();
+    testDBsetting();
     console.log("Preparing for testing...");
   });
 
   before((done) => {
     setTimeout(() => {
+      users.findOne({ name: "kimcoding" })
+      .then((result) => {
+        user_id = result._id;
+        password = result.password;
+        tokenBodyData = {
+          user_id,
+          email: result.email
+        };
+        accessToken = sign(tokenBodyData, process.env.ACCESS_SECRET, {expiresIn: "5m"});
+      })
       done();
-    }, 1500);
+    }, 4000);
+  })
+
+  beforeEach((done) => {
+    setTimeout(() => {
+      done();
+    },1000)
   })
 
   describe("MongoDB Connect", () => {
@@ -45,12 +65,41 @@ describe("Actorz project test code", () => {
   });
 
   describe("Portfolio API", () => {
+    describe("portfolio 삭제, POST /api/portfolio/:user_id/delete", () => {
+      it("요청 헤더의 Authorization 속성이 없을 경우,'Authorization dont exist'메세지가 응답에 포함되어야 합니다", async () => {
+        const noAuthRes = await agent.post(`/api/portfolio/${user_id}/delete`, null);
+        expect(noAuthRes.body.message).to.eql("Authorization dont exist");
+        expect(noAuthRes.body.data).is.null;
+        expect(noAuthRes.statusCode).to.eql(401);
+      });
+      
+      it("요청 헤더의 Authorization 속성에 유효하지 않은 토큰이 담겨 있을 경우, 'Authorization dont exist'메세지가 응답에 포함되어야 합니다", async () => {
+        const headers = {
+          "Authorization": "Bearer FakeToken",
+          "Content-Type": "application/json"
+        };
+        const InvalidAuthRes = await agent.post(`/api/portfolio/${user_id}/delete`, null, headers);
+        expect(InvalidAuthRes.body.message).to.eql("Authorization dont exist");
+        expect(InvalidAuthRes.body.data).is.null;
+        expect(InvalidAuthRes.statusCode).to.eql(401);
+      });
+      
+      it("요청 헤더의 Authorization 속성에 유효한 토큰이 담겨 있을 경우, 'Successfully portfolio delete'메시지가 응답에 포함되어야 합니다", async () => {
+        const headers = {
+          "Authorization": `Bearer ${accessToken}`,
+          "Content-Type": "application/json"
+        };
+        const res = await agent.post(`/api/portfolio/${user_id}/delete`, null, headers);
+        expect(res.body.message).to.eql("Successfully portfolio delete");
+        expect(res.body.data.id).is.not.null;
+        expect(res.statusCode).to.eql(200);
+      });
+    });
+
     describe("portfolio 생성, POST /api/portfolio/:user_id/create", () => {
-      let user;
       let bodyData;
       let portfolioData;
       it("요청 헤더의 Authorization 속성이 없을 경우,'Authorization dont exist'메세지가 응답에 포함되어야 합니다", async () => {
-        user = await users.findOne({ name: "kimcoding" });
         portfolioData = await portfolio.findOne({ user_id: user._id });
         bodyData = {
           password: user.password,
@@ -143,39 +192,6 @@ describe("Actorz project test code", () => {
         };
         const res = await agent.post(`/api/portfolio/${user._id}/update`, bodyData, headers);
         expect(res.body.message).to.eql("ok");
-        expect(res.body.data.id).is.not.null;
-        expect(res.statusCode).to.eql(200);
-      });
-    });
-
-    describe("portfolio 삭제, POST /api/portfolio/:user_id/delete", () => {
-      let user;
-      it("요청 헤더의 Authorization 속성이 없을 경우,'Authorization dont exist'메세지가 응답에 포함되어야 합니다", async () => {
-        user = await users.findOne({ name: "kimcoding" });
-        const noAuthRes = await agent.post(`/api/portfolio/${user._id}/delete`, null);
-        expect(noAuthRes.body.message).to.eql("Authorization dont exist");
-        expect(noAuthRes.body.data).is.null;
-        expect(noAuthRes.statusCode).to.eql(401);
-      });
-      
-      it("요청 헤더의 Authorization 속성에 유효하지 않은 토큰이 담겨 있을 경우, 'Authorization dont exist'메세지가 응답에 포함되어야 합니다", async () => {
-        const headers = {
-          "Authorization": "Bearer FakeToken",
-          "Content-Type": "application/json"
-        };
-        const InvalidAuthRes = await agent.post(`/api/portfolio/${user._id}/delete`, null, headers);
-        expect(InvalidAuthRes.body.message).to.eql("Authorization dont exist");
-        expect(InvalidAuthRes.body.data).is.null;
-        expect(InvalidAuthRes.statusCode).to.eql(401);
-      });
-      
-      it("요청 헤더의 Authorization 속성에 유효한 토큰이 담겨 있을 경우, 'Successfully portfolio delete'메시지가 응답에 포함되어야 합니다", async () => {
-        const headers = {
-          "Authorization": `Bearer ${accessToken}`,
-          "Content-Type": "application/json"
-        };
-        const res = await agent.post(`/api/portfolio/${user._id}/delete`, null, headers);
-        expect(res.body.message).to.eql("Successfully portfolio delete");
         expect(res.body.data.id).is.not.null;
         expect(res.statusCode).to.eql(200);
       });

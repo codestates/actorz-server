@@ -15,10 +15,9 @@ const migrateAndseeds = async () => {
   await portfolio.createCollection();
 
   const userData = await usersSeeds();
-  await portfolioSeeds(userData._id);
-  await post_userSeeds(userData._id);
-  const postData = await postsSeeds(userData._id);
-  await tagsSeeds(postData._id);
+  const tagData = await tagsSeeds();
+  const postData = await postsSeeds(userData._id, userData.name, tagData._id);
+  await portfolioSeeds(userData._id, postData._id);
 }
 
 module.exports = migrateAndseeds;

@@ -23,16 +23,30 @@ describe("Actorz project test code", () => {
   let actorToken, recruiterToken;
 
   before( async () => {
-    db = await dbConnector(() => {
-      // testDBsetting();
-    });
+    db = await dbConnector();
+    testDBsetting();
     console.log("Preparing for testing...");
   });
 
   before((done) => {
     setTimeout(() => {
+      users.findOne({ name: "kimcoding" })
+      .then((result) => {
+        user_id = result._id;
+        tokenBodyData = {
+          user_id,
+          email: result.email
+        };
+        accessToken = sign(tokenBodyData, process.env.ACCESS_SECRET, {expiresIn: "5m"});
+      })
       done();
-    }, 1500);
+    }, 4000);
+  })
+
+  beforeEach((done) => {
+    setTimeout(() => {
+      done();
+    },1000)
   })
 
   describe("MongoDB Connect", () => {

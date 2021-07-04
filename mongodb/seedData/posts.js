@@ -1,8 +1,12 @@
 const { posts, post_user } = require("../models");
 const { findAndModifyConfig } = require("../../config");
 
-module.exports = async (user_id, tag_id) => {
+module.exports = async (user_id, user_name, tag_id) => {
   const seedData = {
+    userInfo: {
+      user_id: user_id,
+      name: user_name,
+    },
     media: [{
       type: "img",
       path: "https://ncache.ilbe.com/files/attach/new/20200206/4255758/1621045151/11231547442/2a4742fc9ee703223e7b964de8730732_11231547478.jpg",
