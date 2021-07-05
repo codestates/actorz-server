@@ -1,6 +1,5 @@
-const { users, posts, post_user } = require("../../mongodb/models");
+const { users, posts } = require("../../mongodb/models");
 const { isAuthorized } = require("../tokenHandle");
-const { findAndModifyConfig } = require("../../config");
 
 module.exports = async (req, res) => {
   try{
@@ -23,16 +22,11 @@ module.exports = async (req, res) => {
     const newPost = await new posts(bodyData);
     newPost.save();
 
-    const conditions = { users: tokenBodyData.user_id };
-    const update = { $push: { posts: newPost._id } };
-    await post_user.findOneAndUpdate(conditions, update, findAndModifyConfig)
-    .then(() => {
-      res.status(201).send({
-        data: {
-          id: newPost._id
-        },
-        message: "ok"
-      });
+    res.status(201).send({
+      data: {
+        id: newPost._id
+      },
+      message: "ok"
     });
     
   }catch(err){

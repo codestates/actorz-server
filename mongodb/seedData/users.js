@@ -8,11 +8,11 @@ module.exports = async () => {
     company: "코드스테이츠",
     provider: "local",
     gender: true,
-    dob: 99-01-01,
+    dob: new Date(1999,0,2),
     role: "recruiter",
     careers: [{
       title: "도깨비",
-      year: 16-12-01,
+      year: new Date(2016,11,2),
       type: "드라마"
     }],
     recruiter: {

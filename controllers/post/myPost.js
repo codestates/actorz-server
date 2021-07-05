@@ -1,4 +1,4 @@
-const { users, posts, post_user } = require("../../mongodb/models");
+const { users, posts } = require("../../mongodb/models");
 
 module.exports = async (req, res) => {
   try{
@@ -12,8 +12,7 @@ module.exports = async (req, res) => {
       });
     };
 
-    await post_user.findOne({ "users": user_id })
-    .then(async (post_userData) => await posts.find({ _id: post_userData.posts }))
+    await posts.find({ "userInfo.user_id": userInfo._id })
     .then((postsData) => {
       res.status(200).send({
         data: {
