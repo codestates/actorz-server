@@ -1,50 +1,65 @@
-const { users, post_user, posts, portfolio } = require("../../mongodb/models");
+const { users, posts } = require("../../mongodb/models");
 
 module.exports = async (req, res) => {
   try{
-    const { name, content } = req.query;
+    const { name, age, content } = req.query;
+    const toDay = new Date();
+    const year = toDay.getFullYear();
+    const month = toDay.getMonth();
+    const day = toDay.getDate();
     const regEx = new RegExp(content);
-    if(!name){
-      if(!content){
-        return await posts.find()
-        .then((postsData) => {
-          res.status(200).send({
-            data: {
-              posts: postsData
-            },
-            message: "ok"
-          });
-        });
-      };
+    
+    let postsData;
+    let usersData;
+    let usersId;
 
-      return await posts.find({ content: regEx })
-      .then((postsData) => {
-        res.status(200).send({
-          data: {
-            posts: postsData
-          },
-          message: "ok"
+    if(!name){
+      if(!age){
+        if(!content){
+          postsData = await posts.find();
+        }else{
+          postsData = await posts.find({ content: regEx });
+        };
+      }else{
+        usersData = await users.find({
+          name,
+          dob: {
+            $gte: new Date(year - (age + 10 ), month, day), 
+            $lt: new Date(year - age, month, day)
+          }
+        })
+        usersId = usersData.map((data) => data._id);
+        if(!content){
+          postsData = await posts.find({ "userInfo.user_id": usersId });
+        }else{
+          postsData = await posts.find({ "userInfo.user_id": usersId }, { content: regEx });
+        }
+      }
+    }else{
+      if(!age){
+        usersData = await users.find({ name });
+      }else{
+        usersData = await users.find({
+          name,
+          dob: {
+            $gte: new Date(year - (age + 10 ), month, day), 
+            $lt: new Date(year - age, month, day)
+          }
         });
-      });
-    };
-  
-    await users.find({ name })
-    .then((usersData) => usersData.map((data) => data._id))
-    .then(async (usersId) => await post_user.find({ users: usersId }))
-    .then((post_usersData) => [].concat(...post_usersData.map((data) => data.posts)))
-    .then(async (postsId) => {
+      }
+      usersId = usersData.map((data) => data._id);
       if(!content){
-        return await posts.find({ _id: postsId });
-      };
-      return await posts.find({ _id: postsId, content: regEx });
-    })
-    .then((postsData) => {
-      res.status(200).send({
-        data: {
-          posts: postsData
-        },
-        message: "ok"
-      });
+        postsData = await posts.find({ "userInfo.user_id": usersId });
+      }else{
+        postsData = await posts.find({ "userInfo.user_id": usersId }, { content: regEx });
+      }
+    };
+
+    res.status(200).send({
+      data: {
+        posts: postsData
+      },
+      message: "ok"
     });
 
   }catch(err){

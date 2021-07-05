@@ -42,7 +42,7 @@ describe("Actorz project test code", () => {
         accessToken = sign(tokenBodyData, process.env.ACCESS_SECRET, {expiresIn: "5m"});
       })
       done();
-    }, 4000);
+    }, 2000);
   })
 
   beforeEach((done) => {

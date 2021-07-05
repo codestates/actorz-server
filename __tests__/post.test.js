@@ -38,7 +38,7 @@ describe("Actorz project test code", () => {
         accessToken = sign(tokenBodyData, process.env.ACCESS_SECRET, {expiresIn: "5m"});
       })
       done();
-    }, 3500);
+    }, 1500);
   })
 
   beforeEach((done) => {
@@ -317,8 +317,9 @@ describe("Actorz project test code", () => {
       let res;
       it("해당 요청을 보낼 경우, 'ok'메세지가 응답에 포함되어야 합니다", async () => {
         const searchName = "kimcoding";
-        const searchContent = "고양이";
-        res = await agent.get(`/api/post/search?name=${searchName}&content=${encodeURI(searchContent)}`);
+        const searchAge = 20;
+        const searchContent = "귀여운";
+        res = await agent.get(`/api/post/search?name=${searchName}&age=${searchAge}&content=${encodeURI(searchContent)}`);
         expect(res.body.message).to.eql("ok");
         expect(res.body.data).is.not.null;
         expect(res.statusCode).to.eql(200);
