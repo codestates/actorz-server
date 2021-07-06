@@ -4,21 +4,28 @@ const { OAuth2Client } = require("google-auth-library");
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 module.exports = async (req, res) => {
+    let ticket;
     const { token }  = req.body
     console.log(req.body)
-    const ticket = await client.verifyIdToken({
+    try{
+      ticket = await client.verifyIdToken({
         idToken: token,
         audience: process.env.GOOGLE_CLIENT_ID
-    });
+      });
+    }catch(err){
+      console.log("token not found")
+      return null;
+    }
     const { email, name } = ticket.getPayload();  
     console.log(ticket.getPayload())
     await users.findOrCreate({
       email: email,
-    }, {
       provider: "google",
+    }, {
       dob: new Date(),
       gender: false,
-      name: "name"
+      name: "name",
+      role: "guest"
     }).then( async ({ doc, created }) => {
       const payload = {
         id: doc.id,
