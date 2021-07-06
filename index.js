@@ -5,7 +5,7 @@ const fs = require("fs");
 const https = require("https");
 const cookieParser = require("cookie-parser");
 
-// const dbConnector = require("./lib/mongooseConnector")(()=>{});
+const dbConnector = require("./lib/mongooseConnector")(()=>{});
 
 const { user, like, post, oauth, portfolio, s3, search } = require("./controllers");
 
