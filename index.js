@@ -13,7 +13,7 @@ const PORT = 3001;
 const app = express();
 
 app.use(cors({
-  origin:["https://actorz.click", "https://www.actorz.click", "https://localhost:3000"],
+  origin:["https://actorz.click", "https://www.actorz.click", "https://localhost:3000", "https://127.0.0.1:3000"],
   credentials:true,
   methods:["POST","GET","OPTIONS"]
 }));
@@ -40,8 +40,7 @@ app.post("/api/user/:user_id/update", user.update);
 app.get("/api/user/:user_id", user.info);
 
 app.post("/api/login/google", oauth.googleLogin);
-app.get("/api/login/naver", oauth.naverLogin);
-app.get("/api/login/naverCallback", oauth.naverLoginCallback);
+app.post("/api/login/naver", oauth.naverLogin);
 
 // LIKES
 app.post("/api/post/:post_id/like", post.postLike);
