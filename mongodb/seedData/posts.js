@@ -9,9 +9,9 @@ module.exports = async (user_id, user_name, tag_id) => {
     },
     media: [{
       type: "img",
-      path: "https://ncache.ilbe.com/files/attach/new/20200206/4255758/1621045151/11231547442/2a4742fc9ee703223e7b964de8730732_11231547478.jpg",
+      path: "https://i.ytimg.com/vi/tYM4oISacwY/maxresdefault.jpg",
     }],
-    content: "귀여운 고양이",
+    content: "박명수 명언",
     genre: "드라마",
     tags: [tag_id]
   };
