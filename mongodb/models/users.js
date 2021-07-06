@@ -45,8 +45,7 @@ const UsersSchema = new Schema({
     type: [{
       title: {
         type: String,
-        required: true,
-        unique: true
+        required: true
       },
       year: {
         type: Date,
