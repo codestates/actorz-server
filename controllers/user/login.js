@@ -9,7 +9,7 @@ module.exports = async (req, res) => {
 
     if(userInfo){
       await userInfo.comparePassword(req.body.password, (err, isMatch) => {
-        if(err){
+        if(err || !isMatch){
           console.log(err);
           res.status(401).send({
             data: null,
