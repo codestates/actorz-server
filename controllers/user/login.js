@@ -35,6 +35,11 @@ module.exports = async (req, res) => {
           });
         }
       });
+    }else{
+      res.status(401).send({
+        data: null,
+        message: "Invalid user or Wrong password"
+      });
     }
 
     // if(!userInfo || !isMatch){
