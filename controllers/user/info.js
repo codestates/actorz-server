@@ -10,19 +10,28 @@ module.exports = async (req, res) => {
     });
   }else{
     let user = await users.findOne({ _id: token.id });
-    user = {
-      id: user._id,
-      ...user._doc,
-      password: undefined,
-      createdAt: undefined,
-      _id: undefined,
-      __v: undefined
+    if(user){
+      user = {
+        id: user._id,
+        ...user._doc,
+        password: undefined,
+        createdAt: undefined,
+        _id: undefined,
+        __v: undefined
+      }
+      res.status(200).send({
+        data: {
+          userInfo: user
+        },
+        message: "ok"
+      });
+    }else{
+      res.status(200).send({
+        data: {
+          userInfo: null
+        },
+        message: "force logout"
+      });
     }
-    res.status(200).send({
-      data: {
-        userInfo: user
-      },
-      message: "ok"
-    });
   }
 };

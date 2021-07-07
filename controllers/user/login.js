@@ -4,10 +4,21 @@ const { generateRefreshToken, generateAccessToken } = require("../tokenHandle");
 module.exports = async (req, res) => {
     const userInfo = await users.findOne({
       email: req.body.email,
-      password: req.body.password
+      provider: "local"
     });
 
-    if(!userInfo){
+    let isMatch;
+    if(userInfo){
+      isMatch = await userInfo.comparePassword(req.body.password, userInfo.password, (err, isMatch) => {
+        if(err){
+          return null;
+        }
+        return true;
+      });
+    }
+
+    if(!userInfo || !isMatch){
+      console.log(isMatch);
       res.status(401).send({
         data: null,
         message: "Invalid user or Wrong password"

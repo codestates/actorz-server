@@ -1,5 +1,7 @@
+require("dotenv").config();
 const { model, Schema } = require("mongoose")
 const findOrCreate = require ("mongoose-findorcreate")
+const bcrypt = require("bcrypt");
 
 const ObjectId = Schema.ObjectId;
 const UsersSchema = new Schema({
@@ -93,4 +95,25 @@ const UsersSchema = new Schema({
   }
 });
 UsersSchema.plugin(findOrCreate);
+UsersSchema.pre("save", function (next) { 
+  var user = this;
+  if (user.isModified("password")) {
+    bcrypt.genSalt(parseInt(process.env.BCRYPT_ROUNDS), (err, salt) => {
+      if (err) return next(err);
+      bcrypt.hash(user.password, salt, (err, hash) => {
+        if (err) return next(err);
+        user.password = hash;
+        next();
+      });
+    });
+  } else {
+    next();
+  }
+});
+UsersSchema.methods.comparePassword = (reqPassword, bPassword, callback) => {
+  return bcrypt.compare(reqPassword, bPassword, (err, isMatch) => {
+    if(err) return callback(err);
+    return callback(null, isMatch);
+  });
+};
 module.exports = model("users", UsersSchema);
