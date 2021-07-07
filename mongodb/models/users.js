@@ -95,10 +95,10 @@ const UsersSchema = new Schema({
   }
 });
 UsersSchema.plugin(findOrCreate);
-UsersSchema.pre("save", function (next) { 
-  var user = this;
+UsersSchema.pre("save", function(next){ 
+  const user = this;
   if (user.isModified("password")) {
-    bcrypt.genSalt(parseInt(process.env.BCRYPT_ROUNDS), (err, salt) => {
+    bcrypt.genSalt(parseInt(process.env.BCRYPT_ROUNDS), function(err, salt){
       if (err) return next(err);
       bcrypt.hash(user.password, salt, (err, hash) => {
         if (err) return next(err);
@@ -110,10 +110,11 @@ UsersSchema.pre("save", function (next) {
     next();
   }
 });
-UsersSchema.methods.comparePassword = (reqPassword, bPassword, callback) => {
-  return bcrypt.compare(reqPassword, bPassword, (err, isMatch) => {
-    if(err) return callback(err);
-    return callback(null, isMatch);
+UsersSchema.methods.comparePassword = function(reqPassword, callback){
+  const user = this;
+  bcrypt.compare(reqPassword, user.password, (err, isMatch) => {
+    if(err) callback(err);
+    callback(null, isMatch);
   });
 };
 module.exports = model("users", UsersSchema);

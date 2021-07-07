@@ -52,6 +52,7 @@ module.exports = async (req, res) => {
     userInfo = await new users(bodyData);
     userInfo.save(async (err, userdoc) => {
       if(err){
+        console.log(err)
         res.status(500).send({
           data: null,
           message: "server error"
@@ -59,10 +60,11 @@ module.exports = async (req, res) => {
       }else{
         const newPostUser = await new post_user({
           users: userdoc._id,
-          posts: []
+          posts: new Array()
         });
         newPostUser.save((err, postdoc) => {
           if(err){
+            console.log(err)
             res.status(500).send({
               data: null,
               message: "server error"
