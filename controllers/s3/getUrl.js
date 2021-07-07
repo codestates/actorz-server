@@ -22,7 +22,7 @@ module.exports = async (req, res) => {
   const objName = await bcrypt.hash(plainTextPassword, salt);
   const params = {
     Bucket: bucketName,
-    Key: objName,
+    Key: objName.replace(/\/|\./g, "s"),
     Expires: 60
   };
   const uploadUrl = await s3.getSignedUrlPromise(
