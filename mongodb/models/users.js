@@ -98,7 +98,7 @@ UsersSchema.plugin(findOrCreate);
 UsersSchema.pre("save", function (next) { 
   var user = this;
   if (user.isModified("password")) {
-    bcrypt.genSalt(parseInt(process.env.SALT), (err, salt) => {
+    bcrypt.genSalt(parseInt(process.env.BCRYPT_ROUNDS), (err, salt) => {
       if (err) return next(err);
       bcrypt.hash(user.password, salt, (err, hash) => {
         if (err) return next(err);
