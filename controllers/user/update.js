@@ -1,5 +1,6 @@
 const { users } = require("../../mongodb/models");
 const { isAuthorized } = require("../tokenHandle");
+const bcrypt = require("bcrypt");
 
 module.exports = async (req, res) => {
   const token = isAuthorized(req);
@@ -9,7 +10,32 @@ module.exports = async (req, res) => {
 	    message: "Authorization dont exist"
     });
   }else{
-    const user = await users.findOneAndUpdate({ _id: token.id }, req.body);
+    let update = {};
+    for(let key of Object.keys(req.body)){
+      if(req.body[key] !== null && key !== "id"){
+        // console.log(key)
+        update[key] = req.body[key];
+      }
+    }
+    // console.log(update)
+    // console.log(token.id)
+    const user = await users.findOneAndUpdate({ email: token.email }, update);
+    if(update.password){
+      bcrypt.genSalt(parseInt(process.env.BCRYPT_ROUNDS), function(err, salt){
+        if(err){ 
+          console.log(err);
+          return;
+        }
+        bcrypt.hash(update.password, salt, async (err, hash) => {
+          if(err){
+            console.log(err)
+            return;
+          }
+          await users.findOneAndUpdate({ email: token.email }, { password: hash });
+        });
+      });
+    }
+    // console.log(user)
     res.status(200).send({
       data: {
         userInfo: {
