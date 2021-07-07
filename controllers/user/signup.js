@@ -2,31 +2,49 @@ const { users, post_user } = require("../../mongodb/models");
 
 module.exports = async (req, res) => {
   const { email } = req.body;
-  await users.findOrCreate({email},{
-    ...req.body,
-    provider: "local"
-  }).then( async ({ doc, created }) => {
-    if(created){
-      const newPostUser = await post_user.create({
-        users: doc._id,
-        posts: []
-      });
-      // console.log(newPostUser)
-      res.status(201).send({
-        data:{
-          id: doc._id,
-          postUserId: newPostUser._id
-        },
-        message: "ok"
-      });
-    }else{
-      res.status(409).send({
-        data: null,
-        message: "이미 존재하는 이메일입니다"
-      });
-    }
-  })
-  .catch(err => {
-    console.log(err)
-  })
+  
+  const userInfo = await users.findOne({ email });
+  if(!userInfo){
+    const bodyData = {
+      provider: "local",
+      ...req.body,
+    };
+    const newUser = await new users(bodyData);
+    newUser.save(async (err, doc) => {
+      if(err){
+        console.log(err);
+        res.status(500).send({
+          data: null,
+          message: "server error"
+        });
+      }else{
+        const newPostUser = await new post_user({
+          users: doc._id,
+          posts: []
+        });
+        newPostUser.save((err, doc) => {
+          if(err){
+            console.log(err);
+            res.status(500).send({
+              data: null,
+              message: "server error"
+            });
+          }else{
+            res.status(201).send({
+              data:{
+                id: doc._id,
+                postUserId: newPostUser._id
+              },
+              message: "ok"
+            });
+          } // if&else
+        });// newPostUser save
+      }//user save err else
+    });//user save
+  }else{
+    res.status(409).send({
+      data: null,
+      message: "이미 존재하는 이메일입니다"
+    });
+  }
 };
