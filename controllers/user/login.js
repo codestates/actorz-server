@@ -8,6 +8,7 @@ module.exports = async (req, res) => {
     });
 
     if(userInfo){
+      console.log(userInfo)
       await userInfo.comparePassword(req.body.password, (err, isMatch) => {
         if(err || !isMatch){
           console.log(err);
