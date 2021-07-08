@@ -11,8 +11,8 @@ module.exports = async (user_id, user_name, tag_id) => {
       type: "img",
       path: "https://i.ytimg.com/vi/tYM4oISacwY/maxresdefault.jpg",
     }],
-    content: "박명수 명언",
     genre: "드라마",
+    content: "박명수 명언",
     tags: [tag_id]
   };
   const postData = await new posts(seedData);
