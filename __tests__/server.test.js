@@ -33,7 +33,7 @@ describe("Actorz project test code", () => {
         user_id = result._id;
         password = result.password;
         tokenBodyData = {
-          user_id,
+          id,
           email: result.email
         };
         accessToken = sign(tokenBodyData, process.env.ACCESS_SECRET, {expiresIn: "5m"});
