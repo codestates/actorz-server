@@ -31,7 +31,10 @@ module.exports = async (req, res) => {
             httpOnly: true,
             secure: true
           }).send({
-            data: {accessToken: accessToken},
+            data: {
+              id: payload.id,
+              accessToken: accessToken
+            },
             message: "ok"
           });
         }
