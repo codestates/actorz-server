@@ -14,7 +14,7 @@ module.exports = async (req, res) => {
 
     const postDate = await posts.findOne({ 
       "_id": post_id,
-      "likes.user_id": tokenBodyData.user_id
+      "likes.user_id": tokenBodyData.id
     });
     if(postDate){
       return res.status(200).send({

@@ -16,7 +16,7 @@ module.exports = async (req, res) => {
 
     const accord = await posts.findOne({ 
       _id: post_id, 
-      "userInfo.user_id": mongoose.Types.ObjectId(tokenBodyData.user_id) 
+      "userInfo.user_id": mongoose.Types.ObjectId(tokenBodyData.id) 
     });
     if(!accord) {
       return res.status(401).send({

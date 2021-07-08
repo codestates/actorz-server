@@ -9,7 +9,7 @@ module.exports = async (req, res) => {
     const { password, posts } = req.body;
 
     // 해당 유저가 맞는지 확인
-    if(!tokenBodyData || tokenBodyData.user_id !== user_id){
+    if(!tokenBodyData || tokenBodyData.id !== user_id){
       return res.status(401).send({
         data: null,
         message: "Authorization dont exist"

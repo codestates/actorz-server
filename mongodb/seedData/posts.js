@@ -9,7 +9,7 @@ module.exports = async (user_id, user_name, tag_id) => {
     },
     media: [{
       type: "img",
-      path: "https://i.ytimg.com/vi/tYM4oISacwY/maxresdefault.jpg",
+      path: "https://t1.daumcdn.net/cfile/tistory/273CC04F595F00DD34",
     }],
     genre: "드라마",
     content: "박명수 명언",
