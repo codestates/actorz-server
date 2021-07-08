@@ -13,7 +13,6 @@ module.exports = {
   },
   isAuthorized: (req) => {
     const authorization = req.headers["authorization"];
-
     if(!authorization){
       return null;
     }else{
@@ -24,19 +23,26 @@ module.exports = {
         // return null if invalid token
         try{
           const cookieToken = req.cookies.refreshToken;
+          // console.log("======= cookie Token =======")
+          // console.log(cookieToken)
           if(
-            !cookieToken &&
+            !cookieToken ||
             cookieToken === "invalidtoken"
           ){
+            // console.log("== NULL ==")
             return null;
+          }else{
+            const data = verify(cookieToken, REFRESH_SECRET);
+            // console.log(" == data == ")
+            // console.log(data)
+            const payload = { 
+              id: data.id,
+              email: data.email 
+            };
+            return sign(payload, ACCESS_SECRET, { expiresIn: 60*60*3 });
           }
-          const data = verify(cookieToken, REFRESH_SECRET);
-          const payload = { 
-            id: data.id,
-            email: data.email 
-          };
-          return sign(payload, ACCESS_SECRET, { expiresIn: 60*60*3 });
         }catch(err){
+          console.log(err)
           return null;
         }
       }
@@ -45,7 +51,7 @@ module.exports = {
   refreshToken: (req) => {
     const cookieToken = req.cookies.refreshToken;
     if(
-      !cookieToken &&
+      !cookieToken ||
       cookieToken === "invalidtoken"
     ){
       return null;

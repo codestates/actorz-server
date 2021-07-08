@@ -2,11 +2,11 @@ const { users, post_user } = require("../../mongodb/models");
 
 module.exports = async (req, res) => {
   const { email } = req.body;
+  console.log(req.body)
   
   const userInfo = await users.findOne({ email });
   if(!userInfo){
     const bodyData = {
-      provider: "local",
       ...req.body,
     };
     const newUser = await new users(bodyData);
@@ -33,6 +33,7 @@ module.exports = async (req, res) => {
             res.status(201).send({
               data:{
                 id: doc._id,
+                email: doc.email,
                 postUserId: newPostUser._id
               },
               message: "ok"

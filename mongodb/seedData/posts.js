@@ -11,8 +11,8 @@ module.exports = async (user_id, user_name, tag_id) => {
       type: "img",
       path: "https://t1.daumcdn.net/cfile/tistory/273CC04F595F00DD34",
     }],
-    content: "유부장",
-    genre: ["드라마"],
+    genre: "드라마",
+    content: "박명수 명언",
     tags: [tag_id]
   };
   const postData = await new posts(seedData);
