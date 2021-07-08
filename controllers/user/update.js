@@ -13,22 +13,26 @@ module.exports = async (req, res) => {
     // console.log(update)
     // console.log(token.id)
     const user = await users.findOneAndUpdate({ email: token.email }, req.body);
+    console.log(user)
     if(req.body.password){
-      bcrypt.genSalt(parseInt(process.env.BCRYPT_ROUNDS), function(err, salt){
-        if(err){ 
-          console.log(err);
-          return;
-        }
-        bcrypt.hash(req.body.password, salt, async (err, hash) => {
-          if(err){
-            console.log(err)
+      if(user.provider === "local"){
+        bcrypt.genSalt(parseInt(process.env.BCRYPT_ROUNDS), function(err, salt){
+          if(err){ 
+            console.log(err);
             return;
           }
-          await users.findOneAndUpdate({ email: token.email }, { password: hash });
+          bcrypt.hash(req.body.password, salt, async (err, hash) => {
+            if(err){
+              console.log(err)
+              return;
+            }
+            await users.findOneAndUpdate({ email: token.email }, { password: hash });
+          });
         });
-      });
+      }else{
+        await users.updateOne({ email: token.email }, {$unset: {password: ""}});
+      }
     }
-    // console.log(user)
     res.status(200).send({
       data: {
         userInfo: {

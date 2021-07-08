@@ -33,7 +33,8 @@ module.exports = async (req, res) => {
   const headers = {"Authorization": `Bearer ${token}`};
 
   const email = await axios.get(api_url2, { headers }).then(res => res.data.response.email);
-  console.log(email);
+  // console.log("====== EMAIL ========");
+  // console.log(email);
 
   if(!email){
     res.status(500).send({
@@ -47,65 +48,7 @@ module.exports = async (req, res) => {
     email,
     provider: "naver"
   });
-  
-  if(!userInfo){
-    const bodyData = {
-      provider: "naver",
-      email: email,
-      dob: new Date(),
-      gender: false,
-      name: "name",
-      role: "guest",
-      careers: []
-    };
-    userInfo = await new users(bodyData);
-    userInfo.save(async (err, userdoc) => {
-      if(err){
-        console.log(err)
-        res.status(500).send({
-          data: null,
-          message: "server error"
-        });
-      }else{
-        const newPostUser = await new post_user({
-          users: userdoc._id,
-          posts: new Array()
-        });
-        newPostUser.save((err, postdoc) => {
-          if(err){
-            console.log(err)
-            res.status(500).send({
-              data: null,
-              message: "server error"
-            });
-          }else{
-            const payload = {
-              id: userdoc._id,
-              email: email
-            };
-            const refreshToken = generateRefreshToken(payload);
-            const accessToken = generateAccessToken(payload);
-            res.cookie("refreshToken", refreshToken, {
-              domain: "localhost",
-              path: "/api/login/naver",
-              maxAge: 24 * 6 * 60 * 10000,
-              sameSite: "None",
-              httpOnly: true,
-              secure: true
-            });
-            res.status(201).send({
-              data:{
-                id: userdoc._id,
-                postUserId: postdoc._id,
-                accessToken
-              },
-              message: "ok"
-            });
-          } // if&else
-        });// newPostUser save
-      }//user save err else
-    });//user save
-  }else{
+  if(userInfo){
     const payload = {
       id: userInfo.id,
       email: email
@@ -120,66 +63,79 @@ module.exports = async (req, res) => {
       httpOnly: true,
       secure: true
     });
-    res.status(200).send({
+    res.status(200).send({ //for login
       data: {
         id: userInfo.id,
         accessToken
       },
       message: "ok"
     });
+  }else{
+    res.status(201).send({ //send Email from token
+      data: {
+        email
+      },
+      message: "new user"
+    });
   }
-
-  // await users.findOrCreate({
-  //   email: userEmail,
-  //   provider: "naver",
-  // }, {
-  //   dob: new Date(),
-  //   gender: false,
-  //   name: "name",
-  //   role: "guest",
-  //   careers: []
-  // }).then( async ({ doc, created }) => {
-  //   const payload = {
-  //     id: doc.id,
-  //     email: userEmail
-  //   };
-  //   const refreshToken = generateRefreshToken(payload);
-  //   const accessToken = generateAccessToken(payload);
-  //   res.cookie("refreshToken", refreshToken, {
-  //     domain: "localhost",
-  //     path: "/api/login/naver",
-  //     maxAge: 24 * 6 * 60 * 10000,
-  //     sameSite: "None",
-  //     httpOnly: true,
-  //     secure: true
-  //   });
-  //   if(created){
-  //     await post_user.create({
-  //       users: doc._id,
-  //       posts: []
-  //     });
-  //     res.status(201).send({
-  //       data: {
-  //         id: doc.id,
-  //         accessToken
-  //       },
-  //       message: "ok"
-  //     });
-  //   }else{
-  //     res.status(200).send({
-  //       data: {
-  //         id: doc.id,
-  //         accessToken
-  //       },
-  //       message: "ok"
-  //     });
-  //   }
-  // })
-  // .catch((err) => {
-  //   console.log(err)
-  //   res.status(500).send({
-  //     data: null,
-  //     message: "Server Error"
-  //   });
-  // });
 };
+  // if(!userInfo){
+  //   const bodyData = {
+  //     provider: "naver",
+  //     email: email,
+  //     dob: new Date(),
+  //     gender: false,
+  //     name: "name",
+  //     role: "guest",
+  //     careers: []
+  //   };
+  //   userInfo = await new users(bodyData);
+  //   userInfo.save(async (err, userdoc) => {
+  //     if(err){
+  //       console.log(err)
+  //       res.status(500).send({
+  //         data: null,
+  //         message: "server error"
+  //       });
+  //     }else{
+  //       const newPostUser = await new post_user({
+  //         users: userdoc._id,
+  //         posts: new Array()
+  //       });
+  //       newPostUser.save((err, postdoc) => {
+  //         if(err){
+  //           console.log(err)
+  //           res.status(500).send({
+  //             data: null,
+  //             message: "server error"
+  //           });
+  //         }else{
+  //           const payload = {
+  //             id: userdoc._id,
+  //             email: email
+  //           };
+  //           const refreshToken = generateRefreshToken(payload);
+  //           const accessToken = generateAccessToken(payload);
+  //           res.cookie("refreshToken", refreshToken, {
+  //             domain: "localhost",
+  //             path: "/api/login/naver",
+  //             maxAge: 24 * 6 * 60 * 10000,
+  //             sameSite: "None",
+  //             httpOnly: true,
+  //             secure: true
+  //           });
+  //           res.status(201).send({
+  //             data:{
+  //               id: userdoc._id,
+  //               postUserId: postdoc._id,
+  //               accessToken
+  //             },
+  //             message: "ok"
+  //           });
+  //         } // if&else
+  //       });// newPostUser save
+  //     }//user save err else
+  //   });//user save
+  // }else{
+  //   
+  // }

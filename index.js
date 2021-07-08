@@ -34,7 +34,7 @@ app.post("/api", (req, res) => {
 // USER
 app.post("/api/login", user.login);
 app.post("/api/signup", user.signup);
-app.post("/api/logout", user.logout);
+app.get("/api/logout", user.logout);
 app.post("/api/user/:user_id/delete", user.delete);
 app.post("/api/user/:user_id/update", user.update);
 app.get("/api/user/:user_id", user.info);
