@@ -8,8 +8,9 @@ module.exports = {
     update: require("./user/update")
   },
   oauth: {
+    googleUrl: require("./oauth/googleUrl"),
     googleLogin: require("./oauth/googleLogin"),
-    kakaoLogin: require("./oauth/kakaoLogin")
+    naverLogin: require("./oauth/naverLogin"),
   },
   like: {
     myLike: require("./like/myLike")

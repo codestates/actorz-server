@@ -1,11 +1,14 @@
+require("dotenv").config();
 const { model, Schema } = require("mongoose")
+const findOrCreate = require ("mongoose-findorcreate")
+const bcrypt = require("bcrypt");
 
 const ObjectId = Schema.ObjectId;
 const UsersSchema = new Schema({
   author: ObjectId,
   mainPic: {
     type: String,
-    default: "https://ncache.ilbe.com/files/attach/new/20200206/4255758/1621045151/11231547442/2a4742fc9ee703223e7b964de8730732_11231547478.jpg"
+    default: "https://pbs.twimg.com/profile_images/894501837927194624/AJyEDF8w.jpg"
   },
   email: {
     type: String,
@@ -15,7 +18,6 @@ const UsersSchema = new Schema({
   },
   password: {
     type: String,
-    required: true,
     trim: true
   },
   name: {
@@ -26,7 +28,7 @@ const UsersSchema = new Schema({
   provider: {
     type: String,
     required: true,
-    enum: ["local", "google", "kakao"]
+    enum: ["local", "google", "naver"]
   },
   gender: {
     type: Boolean,
@@ -34,6 +36,11 @@ const UsersSchema = new Schema({
   },
   dob: {
     type: Date,
+    required: true
+  },
+  role: {
+    type: String,
+    enum: ["guest", "actor", "recruiter"],
     required: true
   },
   careers: {
@@ -48,11 +55,12 @@ const UsersSchema = new Schema({
       },
       type: {
         type: String,
+        enum: ["드라마", "영화", "뮤지컬", "연극", "광고", "뮤직비디오"],
         required: true
       }
     }]
   },
-  recruitor: {
+  recruiter: {
     type: {
       bName: String,
       bAddress: {
@@ -73,7 +81,12 @@ const UsersSchema = new Schema({
       },
       bEmail: String,
       phoneNum: String,
-      jobTitle: String
+      jobTitle: String,
+      bNumber: String,
+      bNumberCert: {
+        type: Boolean,
+        required: true
+      }
     }
   },
   createdAt: {
@@ -81,5 +94,27 @@ const UsersSchema = new Schema({
     default: Date.now
   }
 });
-
+UsersSchema.plugin(findOrCreate);
+UsersSchema.pre("save", function(next){ 
+  const user = this;
+  if (user.isModified("password")) {
+    bcrypt.genSalt(parseInt(process.env.BCRYPT_ROUNDS), function(err, salt){
+      if (err) return next(err);
+      bcrypt.hash(user.password, salt, (err, hash) => {
+        if (err) return next(err);
+        user.password = hash;
+        next();
+      });
+    });
+  } else {
+    next();
+  }
+});
+UsersSchema.methods.comparePassword = function(reqPassword, callback){
+  const user = this;
+  bcrypt.compare(reqPassword, user.password, (err, isMatch) => {
+    if(err) callback(err);
+    callback(null, isMatch);
+  });
+};
 module.exports = model("users", UsersSchema);

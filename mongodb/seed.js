@@ -1,16 +1,15 @@
-require("dotenv").config();
+require("../lib/mongooseConnector")(() => {
+  console.log("planting seeds...");
+});
 const mongoose = require("mongoose");
 const { usersSeeds, portfolioSeeds, post_userSeeds, postsSeeds, tagsSeeds } = require("./seedData");
-const { mongodbUrl, mongodbConfig } = require("../config");
-
-mongoose.connect(mongodbUrl, mongodbConfig);
 
 const seeder = async (callback) => {
   const userData = await usersSeeds();
-  await portfolioSeeds(userData._id);
   await post_userSeeds(userData._id);
-  const postData = await postsSeeds(userData._id);
-  await tagsSeeds(postData._id);
+  const tagData = await tagsSeeds();
+  const postData = await postsSeeds(userData._id, userData.name, tagData._id);
+  await portfolioSeeds(userData._id, postData._id);
 
   await callback();
 };

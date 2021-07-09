@@ -12,8 +12,17 @@ const PortfolioSchema = new Schema({
   posts: {
     type: [{
       type: ObjectId,
-      ref: "posts"
+      ref: "posts",
+      unique: true
     }]
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now
+  },
+  updatedAt: {
+    type: Date,
+    default: Date.now
   }
 });
 

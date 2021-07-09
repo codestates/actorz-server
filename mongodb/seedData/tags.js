@@ -1,9 +1,8 @@
 const { tags } = require("../models");
 
-module.exports = async (post_id) => {
+module.exports = async () => {
   const seedData = {
-    tag: "도깨비",
-    posts: [post_id]
+    tag: "도깨비"
   };
   const tagData = await new tags(seedData);
 

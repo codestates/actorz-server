@@ -5,13 +5,8 @@ const TagsSchema = new Schema({
   author: ObjectId,
   tag: {
     type: String,
-    required: true
-  },
-  posts: {
-    type: [{
-      type: ObjectId,
-      ref: "posts"
-    }]
+    required: true,
+    unique: true
   }
 });
 

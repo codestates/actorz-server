@@ -8,26 +8,36 @@
         "migrate": "node mongodb/migrate.js",
         "migrate:undo": "node mongodb/migrateUndo.js",
         "seed": "node mongodb/seed.js",
-        "test": "NODE_ENV=test mocha '__tests__/server.test.js' --exit"
+        "test": "NODE_ENV=test mocha '__tests__/server.test.js' --timeout 3000 --exit",
+        "test:user": "NODE_ENV=test mocha '__tests__/user.test.js' --timeout 3000 --exit",
+        "test:post": "NODE_ENV=test mocha '__tests__/post.test.js' --timeout 3000 --exit"
     },
     "dependencies": {
+        "aws-sdk": "^2.936.0",
         "axios": "^0.21.1",
+        "bcrypt": "^5.0.1",
         "cookie-parser": "^1.4.5",
         "cors": "^2.8.5",
         "dotenv": "^8.2.0",
         "express": "^4.17.1",
+        "google-auth-library": "^7.2.0",
+        "googleapis": "^79.0.0",
         "jsonwebtoken": "^8.5.1",
         "mongodb": "^3.6.8",
-        "mongoose": "^5.12.14",
+        "mongoose": "^5.13.0",
+        "mongoose-findorcreate": "^3.0.0",
         "multer": "^1.4.2",
-        "pm2": "^4.5.0"
+        "pm2": "^4.5.0",
+        "request": "^2.88.2"
     },
     "devDependencies": {
+        "bcrypt": "^5.0.1",
         "chai": "^4.3.4",
         "eslint": "^7.24.0",
         "eslint-config-standard": "^16.0.2",
         "factory-girl": "^5.0.4",
         "mocha": "^9.0.1",
+        "nock": "^13.1.0",
         "supertest": "^6.1.3"
     }
 }

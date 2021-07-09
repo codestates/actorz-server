@@ -6,12 +6,15 @@ const PostUserSchema = new Schema({
   posts: {
     type: [{
       type: ObjectId,
-      ref: "posts"
-    }]
+      ref: "posts",
+      // unique: true
+    }],
+    default: []
   },
   users: {
     type: ObjectId,
     ref: "users",
+    required: true,
     unique: true
   }
 });
