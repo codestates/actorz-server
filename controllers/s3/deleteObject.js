@@ -13,10 +13,19 @@ const s3 = new AWS.S3({
   signatureVersion: "v4"
 });
 
-module.exports = (path) => {
+module.exports = (medias) => {
+  const Objects = medias.map((media) => {
+    const pathToArr = media.path.split("/");
+    return {
+      Key: pathToArr[pathToArr.length - 1]
+    }
+  })
   const params = {
-    Bucket: bucketName,
-    Key: path
+    Bucket: bucketName, 
+    Delete: {
+      Objects, 
+      Quiet: false
+    }
   };
   s3.deleteObject(params, (err, data) => {
     if(err) console.log(err);
