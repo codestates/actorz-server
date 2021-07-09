@@ -26,7 +26,7 @@ module.exports = async (req, res) => {
     //   });
     // }
     
-    await posts.findById(post_id)
+    await posts.findOne(post_id)
     .then((result) => {
       deleteObject(result.media);
     })
