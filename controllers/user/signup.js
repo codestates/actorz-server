@@ -1,3 +1,5 @@
+const { domain } = require("../../config");
+const { generateRefreshToken, generateAccessToken } = require("../tokenHandle");
 const { users, post_user } = require("../../mongodb/models");
 
 module.exports = async (req, res) => {
@@ -10,7 +12,7 @@ module.exports = async (req, res) => {
       ...req.body,
     };
     const newUser = await new users(bodyData);
-    newUser.save(async (err, doc) => {
+    newUser.save(async (err, userdoc) => {
       if(err){
         console.log(err);
         res.status(500).send({
@@ -19,10 +21,10 @@ module.exports = async (req, res) => {
         });
       }else{
         const newPostUser = await new post_user({
-          users: doc._id,
+          users: userdoc._id,
           posts: []
         });
-        newPostUser.save((err, doc) => {
+        newPostUser.save((err, postdoc) => {
           if(err){
             console.log(err);
             res.status(500).send({
@@ -30,11 +32,25 @@ module.exports = async (req, res) => {
               message: "server error"
             });
           }else{
+            const payload = {
+              id: userdoc._id,
+              email: email
+            };
+            const refreshToken = generateRefreshToken(payload);
+            const accessToken = generateAccessToken(payload);
+            res.cookie("refreshToken", refreshToken, {
+              domain: domain,
+              path: "/",
+              maxAge: 24 * 6 * 60 * 10000,
+              sameSite: "None",
+              httpOnly: true,
+              secure: true
+            });
             res.status(201).send({
               data:{
-                id: doc._id,
-                email: doc.email,
-                postUserId: newPostUser._id
+                id: userdoc._id,
+                postUserId: postdoc._id,
+                accessToken
               },
               message: "ok"
             });

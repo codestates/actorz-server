@@ -1,3 +1,4 @@
+const { domain } = require("../../config");
 const { users } = require("../../mongodb/models");
 const { generateRefreshToken, generateAccessToken } = require("../tokenHandle");
 
@@ -24,8 +25,8 @@ module.exports = async (req, res) => {
           const refreshToken = generateRefreshToken(payload);
           const accessToken = generateAccessToken(payload);
           res.status(200).cookie("refreshToken", refreshToken, {
-            domain: "localhost",
-            path: "/api/login",
+            domain: domain,
+            path: "/",
             maxAge: 24 * 6 * 60 * 10000,
             sameSite: "None",
             httpOnly: true,

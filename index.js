@@ -5,6 +5,7 @@ const fs = require("fs");
 const https = require("https");
 const cookieParser = require("cookie-parser");
 
+const { domain } = require("./config");
 const dbConnector = require("./lib/mongooseConnector")(()=>{});
 
 const { user, like, post, oauth, portfolio, s3, search } = require("./controllers");
@@ -13,7 +14,7 @@ const PORT = 3001;
 const app = express();
 
 app.use(cors({
-  origin:["https://actorz.click", "https://www.actorz.click", "https://localhost:3000", "https://127.0.0.1:3000"],
+  origin:[`https://${domain}`, `https://www.${domain}`],
   credentials:true,
   methods:["POST","GET","OPTIONS"]
 }));
@@ -39,8 +40,10 @@ app.post("/api/user/:user_id/delete", user.delete);
 app.post("/api/user/:user_id/update", user.update);
 app.get("/api/user/:user_id", user.info);
 
+// OAUTH
 app.post("/api/login/google", oauth.googleLogin);
 app.post("/api/login/naver", oauth.naverLogin);
+app.get("/api/googleurl", oauth.googleUrl);
 
 // LIKES
 app.post("/api/post/:post_id/like", post.postLike);
