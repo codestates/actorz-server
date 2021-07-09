@@ -12,8 +12,9 @@ module.exports = async (req, res) => {
       });
     };
 
-    await posts.find({ "userInfo.user_id": userInfo.id })
+    await posts.find({ "userInfo.user_id": userInfo._id })
     .then((postsData) => {
+      console.log(postsData)
       res.status(200).send({
         data: {
           posts: postsData
@@ -23,6 +24,7 @@ module.exports = async (req, res) => {
     });
 
   }catch(err){
+    console.log(err)
     res.status(500).send({
       data: null,
       message: "Server Error"
