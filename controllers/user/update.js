@@ -17,7 +17,6 @@ module.exports = async (req, res) => {
     console.log(user)
     if(req.body.password){
       if(user.provider === "local"){
-        console.log("????????")
         bcrypt.genSalt(parseInt(process.env.BCRYPT_ROUNDS), function(err, salt){
           if(err){ 
             console.log(err);
@@ -32,7 +31,6 @@ module.exports = async (req, res) => {
           });
         });
       }else{
-        console.log("!!!!!!!!!!")
         await users.updateOne({ email: token.email }, {$unset: {password: ""}});
       }
     }
