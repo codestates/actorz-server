@@ -9,10 +9,10 @@ module.exports = async (user_id, user_name, tag_id) => {
     },
     media: [{
       type: "img",
-      path: "https://t1.daumcdn.net/cfile/tistory/273CC04F595F00DD34",
+      path: "https://pbs.twimg.com/media/DAWm6enXYAIJidM?format=jpg&name=large",
     }],
     genre: "드라마",
-    content: "박명수 명언",
+    content: "화이팅",
     tags: [tag_id]
   };
   const postData = await new posts(seedData);
