@@ -35,7 +35,7 @@ const PostsSchema = new Schema({
   genre: {
     type: String,
     required: true,
-    enum: ["드라마", "판타지", "액션", "공포", "코미디"]
+    enum: ["드라마", "판타지", "액션", "공포", "코미디", "기타"]
   },
   tags:{
     type: [{
