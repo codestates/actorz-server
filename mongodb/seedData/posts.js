@@ -9,7 +9,7 @@ module.exports = async (user_id, user_name, tag_id) => {
     },
     media: [{
       type: "img",
-      path: "https://pbs.twimg.com/media/DAWm6enXYAIJidM?format=jpg&name=large",
+      path: "https://t1.daumcdn.net/cfile/blog/2708FB3358658DFC10",
     }],
     genre: "드라마",
     content: "화이팅",

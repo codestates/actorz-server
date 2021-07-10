@@ -10,7 +10,8 @@ module.exports = async (req, res) => {
         message: "Authorization dont exist"
       });
     };
-    const userInfo = await users.findById(tokenBodyData.id);
+    const userInfo = await users.findOne({ _id: tokenBodyData.id });
+
     const bodyData = {
       userInfo: {
         user_id: userInfo._id,
@@ -22,7 +23,7 @@ module.exports = async (req, res) => {
     newPost.save();
     res.status(201).send({
       data: {
-        id: newPost._id
+        id: newPost.id
       },
       message: "ok"
     });
