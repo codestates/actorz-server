@@ -46,8 +46,7 @@ module.exports = async (req, res) => {
   }
 
   let userInfo = await users.findOne({ 
-    email,
-    provider: "naver"
+    email
   });
   if(userInfo){
     const payload = {
