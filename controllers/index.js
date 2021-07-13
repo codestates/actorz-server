@@ -1,4 +1,7 @@
 module.exports = {
+  email: {
+    send: require("./email")
+  },
   user: {
     login: require("./user/login"),
     logout: require("./user/logout"),
@@ -8,7 +11,6 @@ module.exports = {
     update: require("./user/update")
   },
   oauth: {
-    googleUrl: require("./oauth/googleUrl"),
     googleLogin: require("./oauth/googleLogin"),
     naverLogin: require("./oauth/naverLogin"),
   },

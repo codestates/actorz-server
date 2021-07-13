@@ -56,9 +56,7 @@ module.exports = async (req, res) => {
     const refreshToken = generateRefreshToken(payload);
     const accessToken = generateAccessToken(payload);
     res.cookie("refreshToken", refreshToken, {
-      domain: domain,
-      path: "/",
-      maxAge: 24 * 6 * 60 * 10000,
+      maxAge: 60 * 60 * 24,
       sameSite: "None",
       httpOnly: true,
       secure: true

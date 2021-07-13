@@ -12,6 +12,7 @@ module.exports = async (req, res) => {
       _id: undefined,
       __v: undefined
     }
+    console.log(user)
     res.status(200).send({
       data: {
         userInfo: user
@@ -19,11 +20,11 @@ module.exports = async (req, res) => {
       message: "ok"
     });
   }else{
-    res.status(200).send({
+    res.status(409).send({
       data: {
         userInfo: null
       },
-      message: "force logout"
+      message: "user not found"
     });
   }
 };

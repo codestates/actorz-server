@@ -1,10 +1,9 @@
-const { users, post_user } = require("../../mongodb/models");
+const { users } = require("../../mongodb/models");
 const { generateAccessToken, generateRefreshToken } = require("../tokenHandle");
 const { OAuth2Client } = require("google-auth-library");
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 module.exports = async (req, res) => {
-  console.log(req.body)
   let ticket, token;
   try{
     token  = req.body.code;
@@ -54,9 +53,7 @@ module.exports = async (req, res) => {
     const refreshToken = generateRefreshToken(payload);
     const accessToken = generateAccessToken(payload);
     res.cookie("refreshToken", refreshToken, {
-      domain: "localhost",
-      path: "/api/login/google",
-      maxAge: 24 * 6 * 60 * 10000,
+      maxAge: 60 * 60 * 24,
       sameSite: "None",
       httpOnly: true,
       secure: true
@@ -69,57 +66,4 @@ module.exports = async (req, res) => {
       message: "ok"
     });
   }
-
-    // await users.findOrCreate({
-    //   email: email,
-    //   provider: "google",
-    // }, {
-    //   dob: new Date(),
-    //   gender: false,
-    //   name: "name",
-    //   role: "guest"
-    // }).then( async ({ doc, created }) => {
-    //   const payload = {
-    //     id: doc.id,
-    //     email: email
-    //   };
-    //   const refreshToken = generateRefreshToken(payload);
-    //   const accessToken = generateAccessToken(payload);
-    //   res.cookie("refreshToken", refreshToken, {
-    //     domain: "localhost",
-    //     path: "/api/login/google",
-    //     maxAge: 24 * 6 * 60 * 10000,
-    //     sameSite: "None",
-    //     httpOnly: true,
-    //     secure: true
-    //   });
-    //   if(created){
-    //     await post_user.create({
-    //       users: doc._id,
-    //       posts: []
-    //     });
-    //     res.status(201).send({
-    //       data: {
-    //         id: doc.id,
-    //         accessToken
-    //       },
-    //       message: "ok"
-    //     });
-    //   }else{
-    //     res.status(200).send({
-    //       data: {
-    //         id: doc.id,
-    //         accessToken
-    //       },
-    //       message: "ok"
-    //     });
-    //   }
-    // })
-    // .catch((err) => {
-    //   console.log(err)
-    //   res.status(500).send({
-    //     data: null,
-    //     message: "Server Error"
-    //   });
-    // });
 };
