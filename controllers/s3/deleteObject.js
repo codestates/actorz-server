@@ -13,11 +13,11 @@ const s3 = new AWS.S3({
   signatureVersion: "v4"
 });
 
-module.exports = (medias) => {
-  const Objects = medias.map((media) => {
-    const pathToArr = media.path.split("/");
+module.exports = (media) => {
+  const Objects = media.map((data) => {
+    const path = data.path.split("%242b%2410%24")[1];
     return {
-      Key: pathToArr[pathToArr.length - 1]
+      Key: "$2b$10$" + path
     }
   })
   const params = {
@@ -27,7 +27,7 @@ module.exports = (medias) => {
       Quiet: false
     }
   };
-  s3.deleteObject(params, (err, data) => {
+  s3.deleteObjects(params, (err, data) => {
     if(err) console.log(err);
   });
 }

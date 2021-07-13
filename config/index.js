@@ -8,19 +8,33 @@ if(process.env.NODE_ENV === "production"){
   password = process.env.MONGO_DB_PASSWORD;
   dbName = process.env.MONGO_DB_NAME;
   dbUrl = process.env.MONGO_DB_URL;
-  domain = "actorz.click"
+  domain = "actorz.click";
+  
+  emailSmtpHost = process.env.NODEMAILER_SMTP_ENDPOINT;
+  emailService = process.env.NODEMAILER_SERVICE;
+  emailUser = process.env.NODEMAILER_USER;
+  emailPassword = process.env.NODEMAILER_PASSWORD;
 }else{
   redirectUri = process.env.REDIRECT_URI_TEST;
   username = process.env.TESTING_DB_USERNAME;
   password = process.env.TESTING_DB_PASSWORD;
   dbName = process.env.TESTING_DB_NAME;
   dbUrl = process.env.TESTING_DB_URL;  
-  domain = "localhost:3000"
+  domain = "localhost:3000";
+
+  emailSmtpHost = process.env.NODEMAILER_SMTP_ENDPOINT_TSET;
+  emailService = process.env.NODEMAILER_SERVICE_TEST;
+  emailUser = process.env.NODEMAILER_USER_TEST;
+  emailPassword = process.env.NODEMAILER_PASSWORD_TEST;
 }
 
 module.exports = {
   domain,
   redirectUri,
+  emailSmtpHost,
+  emailService,
+  emailUser,
+  emailPassword,
   mongodbUrl: `mongodb+srv://${username}:${password}@${dbUrl}/${dbName}`,
   mongodbConfig: {
     useNewUrlParser: true,

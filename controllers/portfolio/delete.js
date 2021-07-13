@@ -1,6 +1,5 @@
 const { portfolio } = require("../../mongodb/models");
 const { isAuthorized } = require("../tokenHandle");
-const { findAndModifyConfig } = require("../../config");
 
 module.exports = async (req, res) => {
   try{
@@ -15,7 +14,7 @@ module.exports = async (req, res) => {
     };
 
     // 해당 유저의 요청이면, portfolio 내용 삭제
-    await portfolio.findOneAndUpdate({ user_id }, { posts: [] }, findAndModifyConfig)
+    await portfolio.findOneAndDelete({ user_id })
     .then((pfDate) => {
       res.status(200).send({
         data: {
@@ -26,6 +25,7 @@ module.exports = async (req, res) => {
     });
     
   }catch(err){
+    console.log(err);
     res.status(500).send({
       data: null,
       message: "Server Error"

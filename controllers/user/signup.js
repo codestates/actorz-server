@@ -4,14 +4,15 @@ const { users, post_user } = require("../../mongodb/models");
 
 module.exports = async (req, res) => {
   const { email } = req.body;
-  console.log(req.body)
   
   const userInfo = await users.findOne({ email });
   if(!userInfo){
     const bodyData = {
       ...req.body,
     };
+    console.log(req.body)
     const newUser = await new users(bodyData);
+    console.log(newUser)
     newUser.save(async (err, userdoc) => {
       if(err){
         console.log(err);

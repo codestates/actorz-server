@@ -1,5 +1,6 @@
 const { posts } = require("../../mongodb/models");
 const { isAuthorized } = require("../tokenHandle");
+const { findAndModifyConfig } = require("../../config");
 
 module.exports = async (req, res) => {
   try{
@@ -12,11 +13,11 @@ module.exports = async (req, res) => {
       })
     };
 
-    const postDate = await posts.findOne({ 
+    const postData = await posts.findOne({ 
       "_id": post_id,
       "likes.user_id": tokenBodyData.id
     });
-    if(!postDate){
+    if(!postData){
       return res.status(204).send({
         data: null,
         message: "이미 좋아요를 취소 했습니다"
@@ -30,11 +31,12 @@ module.exports = async (req, res) => {
         }
       }
     };
-    await posts.updateOne({ _id: post_id}, update)
-    .then(() => {
+    await posts.findOneAndUpdate({ _id: post_id}, update, findAndModifyConfig)
+    .then((result) => {
       res.status(201).send({
         data: {
-          id: post_id
+          id: result.id,
+          likes: result.likes
         },
         message: "ok"
       });

@@ -3,8 +3,6 @@ const { isAuthorized } = require("../tokenHandle");
 
 module.exports = async (req, res) => {
   let user = await users.findOne({ _id: req.params.user_id });
-  console.log(user)
-  console.log(req.params)
   if(user){
     user = {
       id: user._id,
@@ -14,6 +12,7 @@ module.exports = async (req, res) => {
       _id: undefined,
       __v: undefined
     }
+    console.log(user)
     res.status(200).send({
       data: {
         userInfo: user
@@ -21,11 +20,11 @@ module.exports = async (req, res) => {
       message: "ok"
     });
   }else{
-    res.status(200).send({
+    res.status(409).send({
       data: {
         userInfo: null
       },
-      message: "force logout"
+      message: "user not found"
     });
   }
 };

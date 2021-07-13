@@ -26,12 +26,12 @@ module.exports = async (req, res) => {
     //   });
     // }
     
-    await posts.findOne(post_id)
+    await posts.findOne({ _id: post_id })
     .then((result) => {
       deleteObject(result.media);
     })
 
-    await posts.findByIdAndUpdate(post_id, req.body, findAndModifyConfig)
+    await posts.findOneAndUpdate({ _id: post_id }, req.body, findAndModifyConfig)
     .then((result) => {
       res.status(200).send({
         data: {
