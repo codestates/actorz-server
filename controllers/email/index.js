@@ -1,6 +1,7 @@
 const nodemailer = require("nodemailer");
 const { users } = require("../../mongodb/models");
 const { isAuthorized } = require("../tokenHandle");
+const { emailSmtpHost, emailService, emailUser, emailPassword } = require("../../config");
 
 module.exports = async (req, res) => {
   const tokenBodyData = isAuthorized(req);
@@ -26,18 +27,18 @@ module.exports = async (req, res) => {
 
   try{ 
       let transporter = nodemailer.createTransport({
-      service: 'gmail',
-      host: 'smtp.gmail.com',
+      service: emailService,
+      host: emailSmtpHost,
       port: 587,
       secure: false,
       auth: {
-        user: process.env.NODEMAILER_USER,
-        pass: process.env.NODEMAILER_PASSWORD,
+        user: emailUser,
+        pass: emailPassword,
       },
     });
 
     let info = await transporter.sendMail({
-      from: `"ACTORZ" <${process.env.NODEMAILER_USER}>`,
+      from: `"ACTORZ" <noreply@actorz.click>`,
       to: email,
       subject: `Actorz의 리크루터 ${recruiter.name} (이)가 명함을 보냈습니다`,
       text: `
