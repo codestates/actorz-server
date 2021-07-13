@@ -10,7 +10,7 @@ const dbConnector = require("./lib/mongooseConnector")(()=>{});
 
 
 
-const { user, like, post, oauth, portfolio, s3, search } = require("./controllers");
+const { user, like, post, oauth, portfolio, s3, search, email } = require("./controllers");
 
 const PORT = 3001;
 const app = express();
@@ -45,7 +45,6 @@ app.get("/api/user/:user_id", user.info);
 // OAUTH
 app.post("/api/login/google", oauth.googleLogin);
 app.post("/api/login/naver", oauth.naverLogin);
-app.get("/api/googleurl", oauth.googleUrl);
 
 // LIKES
 app.post("/api/post/:post_id/like", post.postLike);
@@ -72,6 +71,9 @@ app.get("/api/portfolio/:user_id", portfolio.info);
 
 // S3
 app.get("/api/upload", s3.getUrl);
+
+// EMAIL
+app.post("/api/email", email.send);
 
 let server;
 if(process.env.NODE_ENV === "production"){
