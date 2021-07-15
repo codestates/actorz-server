@@ -15,15 +15,22 @@ module.exports = async (req, res) => {
     const user_id = mongoose.Types.ObjectId(token.id);
     await posts.find({ "userInfo.user_id": user_id })
     .then((result) => {
-      const media = result.reduce((acc, cur) => acc.concat(cur.media), []);
-      deleteObject(media);
+      if(result.length > 0){
+        const media = result.reduce((acc, cur) => acc.concat(cur.media), []);
+        deleteObject(media);
+      }
     })
     await portfolio.deleteOne({ user_id });
     await post_user.deleteOne({ users: user_id });
     await posts.deleteMany({ "userInfo.user_id": user_id });
     await users.deleteOne({ _id: user_id });
     // console.log(token)
-    res.status(205).send({
+    res.status(205).cookie("refreshToken", "invalidtoken", {
+      maxAge: 60 * 60 * 24,
+      sameSite: "None",
+      httpOnly: true,
+      secure: true
+    }).send({
       data: {
         id: token.id
       },
