@@ -18,7 +18,13 @@ module.exports = async (req, res) => {
 
     // user_id가 유효하다면, user_id의 portfolio에 게시한 posts_id 찾기
     const postsId = await portfolio.findOne({user_id: userInfo._id})
-    .then((pfData) => pfData.posts);
+    .then((pfData) => {
+      if(!pfData) return null;
+      return pfData.posts
+    });
+    if(!postsId){
+      return res.sendStatus(204);
+    }
     // 찾은 posts_id로 해당 post들의 데이터 찾기
     const postsData = await posts.find({ _id: postsId });
     // 찾은 데이터를 유저정보와 함께 응답
