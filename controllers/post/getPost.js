@@ -1,4 +1,4 @@
-const { posts } = require("../../mongodb/models");
+const { posts, users } = require("../../mongodb/models");
 
 module.exports = async (req, res) => {
   try{
@@ -12,9 +12,13 @@ module.exports = async (req, res) => {
       });
     };
 
+    const postOwner = await users
+    .findOne({ _id: postInfo.userInfo.user_id });
+
     res.status(200).send({
       data: {
-        post: postInfo
+        post: postInfo,
+        userPic: postOwner.mainPic
       },
       message: "ok"
     });
