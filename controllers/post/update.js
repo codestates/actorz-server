@@ -28,7 +28,10 @@ module.exports = async (req, res) => {
     
     await posts.findOne({ _id: post_id })
     .then((result) => {
-      deleteObject(result.media);
+      const difference = result.media.filter((privData) => {
+        return !req.body.media.some((newData) => newData.path===privData.path)
+      });
+      if(difference[0]) deleteObject(result.media);
     })
 
     await posts.findOneAndUpdate({ _id: post_id }, req.body, findAndModifyConfig)
