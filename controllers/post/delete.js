@@ -27,7 +27,7 @@ module.exports = async (req, res) => {
 
     await posts.findOneAndDelete({ _id: post_id })
     .then((result) => {
-      deleteObject(result.media);
+      if(result.media[0]) deleteObject(result.media);
       res.status(200).send({
         data: {
           id: result._id
