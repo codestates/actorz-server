@@ -8,7 +8,7 @@ const UsersSchema = new Schema({
   author: ObjectId,
   mainPic: {
     type: String,
-    default: "https://bit.ly/3rdd2wx"
+    default: "https://actorz-upload-test.s3.ap-northeast-2.amazonaws.com/lib/default_mainPic.png"
   },
   email: {
     type: String,
