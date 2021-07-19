@@ -14,17 +14,6 @@ module.exports = async (req, res) => {
       });
     };
 
-    // const accord = await posts.findOne({ 
-    //   _id: post_id, 
-    //   "userInfo.user_id": mongoose.Types.ObjectId(tokenBodyData.id) 
-    // });
-    // if(!accord) {
-    //   return res.status(401).send({
-    //     data: null,
-    //     message: "Authorization dont exist"
-    //   });
-    // }
-
     await posts.findOneAndDelete({ _id: post_id })
     .then((result) => {
       if(result.media[0]) deleteObject(result.media);

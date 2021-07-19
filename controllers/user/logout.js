@@ -1,6 +1,5 @@
 const { domain } = require("../../config");
 module.exports = async (req, res) => {
-  console.log(req.cookies)
 
   res.status(205).cookie("refreshToken", "invalidtoken", {
     maxAge: 60 * 60 * 24,

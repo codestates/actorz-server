@@ -10,9 +10,7 @@ module.exports = async (req, res) => {
     const bodyData = {
       ...req.body,
     };
-    console.log(req.body)
     const newUser = await new users(bodyData);
-    console.log(newUser)
     newUser.save(async (err, userdoc) => {
       if(err){
         console.log(err);

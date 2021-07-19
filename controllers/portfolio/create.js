@@ -18,20 +18,6 @@ module.exports = async (req, res) => {
       });
     };
 
-    // // 해당 유저가 요청한 것인지 password인증
-    // const accord = await users.findOne({ _id: user_id })
-    // .catch((err) => { throw err });
-    // await accord.comparePassword(password, async (err, isMatch) => {
-    //   // err 또는 data가 없을 경우 password 불일치
-    //   if(err || !isMatch){
-    //     console.log(err);
-    //     return res.status(401).send({
-    //       data: null,
-    //       message: "Invalid Wrong password"
-    //     });
-    //   };
-    // });
-
     // 생성할 portfolio의 bodyData 생성
     const bodyData = {
       user_id,
