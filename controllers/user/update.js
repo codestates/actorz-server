@@ -10,7 +10,7 @@ module.exports = async (req, res) => {
 	    message: "Authorization dont exist"
     });
   }else{
-    const user = await users.findOneAndUpdate({ email: token.email }, req.body);
+    const user = await users.findOneAndUpdate({ email: token.email }, req.body, {new: true});
     if(req.body.password){
       if(user.provider === "local"){
         bcrypt.genSalt(parseInt(process.env.BCRYPT_ROUNDS), function(err, salt){
@@ -30,6 +30,7 @@ module.exports = async (req, res) => {
         await users.updateOne({ email: token.email }, {$unset: {password: ""}});
       }
     }
+    console.log(user._doc)
     res.status(200).send({
       data: {
         userInfo: {
