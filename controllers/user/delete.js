@@ -24,7 +24,7 @@ module.exports = async (req, res) => {
     await post_user.deleteOne({ users: user_id });
     await posts.deleteMany({ "userInfo.user_id": user_id });
     await users.deleteOne({ _id: user_id });
-    // console.log(token)
+
     res.status(205).cookie("refreshToken", "invalidtoken", {
       maxAge: 60 * 60 * 24,
       sameSite: "None",

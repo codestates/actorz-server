@@ -11,7 +11,7 @@ module.exports = async (req, res) => {
     if(userInfo){
       await userInfo.comparePassword(req.body.password, (err, isMatch) => {
         if(err || !isMatch){
-          console.log(err);
+          if(err) console.log(err);
           res.status(401).send({
             data: null,
             message: "Invalid user or Wrong password"

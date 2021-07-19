@@ -12,7 +12,7 @@ module.exports = async (req, res) => {
       _id: undefined,
       __v: undefined
     }
-    console.log(user)
+
     res.status(200).send({
       data: {
         userInfo: user

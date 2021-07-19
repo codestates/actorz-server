@@ -12,7 +12,6 @@ module.exports = {
     return sign(data, REFRESH_SECRET, { expiresIn: 60*60*6 });
   },
   isAuthorized: (req) => {
-    console.log(req.cookies)
     const authorization = req.headers["authorization"];
     if(!authorization){
       return null;

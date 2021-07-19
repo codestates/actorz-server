@@ -25,14 +25,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
-
-app.get("/api", (req, res) => {
-  res.send("Hello Actorz :)");
-});
-app.post("/api", (req, res) => {
-  res.send("hi")
-});
-
 // ROUTER
 // USER
 app.post("/api/login", user.login);
